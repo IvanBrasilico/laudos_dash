@@ -35,8 +35,10 @@ app.layout = html.Div([
         multi=True
 
     ),
-    dcc.Graph(id='my-graph')
-], style={'width': '500'})
+    dcc.Graph(id='my-graph'),
+    dcc.Graph(id='pesopaises-graph')
+
+], style={'width': '800'})
 
 """
 @app.callback(Output('tab-output', 'children'), [Input('tabs', 'value')])
