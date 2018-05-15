@@ -10,13 +10,13 @@ setup(
     author_email='brasilico.ivan@gmail.com',
     packages=find_packages(),
     install_requires=[
-        'dash',
-        'dash-renderer',
-        'dash-html-components',
-        'dash-core-components',
+        'dash==0.21.1',
+        'dash-renderer==0.12.1',
+        'dash-html-components==0.10.1',
+        'dash-core-components==0.22.1',
         'mysqlclient',
         'pandas',
-        'plotly'
+        'plotly==2.2.3'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
