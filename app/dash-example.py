@@ -5,12 +5,33 @@ import dash_html_components as html
 import plotly.graph_objs as go
 
 import pandas as pd
-from datetime import datetime as dt
 import MySQLdb
 
 db = MySQLdb.connect('localhost', 'root', 'ivan1234')
 db.select_db('LAUDOS')
-app = dash.Dash('Hello World')
+app = dash.Dash('Laudos DashBoard')
+def update_pesopaises_graph():
+    sql = 'SELECT p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
+        '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem) * 100, 2) ' + \
+        'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem c ' + \
+        'INNER JOIN paises p ON p.codpais = c.codpais ' + \
+        'GROUP BY PaisOrigem ' + \
+        'ORDER BY pesototal DESC; '
+    df = pd.read_sql(sql, db)
+    layout = go.Layout(xaxis=dict(type='category', title='País de Origem'),
+                       yaxis=dict(title='Percentual em peso nas importações'),
+                       margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
+                       width=800)
+    data = []
+    data.append(go.Bar({
+        'x': df['PaisOrigem'],
+        'y': df['pesototal'],
+        'name': 'Movimentação por país de origem'
+    }))
+    return {
+        'data': data,
+        'layout': layout
+    }
 
 lista_sql = pd.read_sql('SELECT * FROM relatorios ORDER BY ID', db)
 sql = lista_sql['sql'][1]
@@ -21,7 +42,7 @@ for index, name in enumerate(lista_sql['nome']):
 app.layout = html.Div([
     dcc.Dropdown(
         id='query',
-        options= queries,
+        options=queries,
         value=0,
     ),
     dcc.Dropdown(
@@ -35,46 +56,16 @@ app.layout = html.Div([
         multi=True
 
     ),
-    dcc.Graph(id='my-graph'),
-    dcc.Graph(id='pesopaises-graph')
+    dcc.Graph(id='years-graph'),
+    dcc.Graph(id='pesopaises-graph',
+              figure=go.Figure( update_pesopaises_graph()
 
+              ))
 ], style={'width': '800'})
 
-"""
-@app.callback(Output('tab-output', 'children'), [Input('tabs', 'value')])
-def display_content(value):
-    data = []
-    lista_sql = pd.read_sql('SELECT * FROM relatorios ORDER BY ID', db)
-    sql = lista_sql['sql'][value]
-    print(sql)
-    df = pd.read_sql(sql, db)
-    layout = go.Layout(xaxis=dict(type='category', title=df.columns[1]),
-                       yaxis=dict(title='Número de pedidos'),
-                       margin={'l': 40, 'r': 0, 't': 20, 'b': 30},
-                       width=800)
-    for year in [2018]:
-        df_filtered = df[df['Ano_Solicitacao'] == int(year)]
-        data.append(go.Bar({
-            'x': df_filtered[df_filtered.columns[1]],
-            'y': df_filtered.qtde,
-            'name': year
-        }))
-    return html.Div([
-        dcc.Graph(
-            id='graph',
-            figure={
-                'data': data,
-                'layout': layout
-                }
-            
-        )
-    ])
 
-
-"""
-
-@app.callback(Output('my-graph', 'figure'), [Input('years', 'value'), Input('query', 'value')])
-def update_graph(selected_dropdown_value, query_value):
+@app.callback(Output('years-graph', 'figure'), [Input('years', 'value'), Input('query', 'value')])
+def update_my_graph(selected_dropdown_value, query_value):
     data = []
     sql = lista_sql['sql'][query_value]
     df = pd.read_sql(sql, db)
@@ -94,6 +85,9 @@ def update_graph(selected_dropdown_value, query_value):
         'data': data,
         'layout': layout
     }
+
+
+
 
 app.css.append_css(
     {'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'})
