@@ -7,25 +7,33 @@ import plotly.graph_objs as go
 import pandas as pd
 import MySQLdb
 
+app = dash.Dash('Laudos DashBoard')
+
 db = MySQLdb.connect('localhost', 'root', 'ivan1234')
 db.select_db('LAUDOS')
-app = dash.Dash('Laudos DashBoard')
+sql = 'SELECT p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
+    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem) * 100, 2) ' + \
+    'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem c ' + \
+    'INNER JOIN paises p ON p.codpais = c.codpais ' + \
+    'GROUP BY PaisOrigem ' + \
+    'ORDER BY pesototal DESC; '
+df_ncmpesopais = pd.read_sql(sql, db)
+
+lista_sql = pd.read_sql('SELECT * FROM relatorios ORDER BY ID', db)
+sql = lista_sql['sql'][1]
+queries = []
+for index, name in enumerate(lista_sql['nome']):
+    queries.append({'label': name, 'value': index})
+
 def update_pesopaises_graph():
-    sql = 'SELECT p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
-        '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem) * 100, 2) ' + \
-        'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem c ' + \
-        'INNER JOIN paises p ON p.codpais = c.codpais ' + \
-        'GROUP BY PaisOrigem ' + \
-        'ORDER BY pesototal DESC; '
-    df = pd.read_sql(sql, db)
     layout = go.Layout(xaxis=dict(type='category', title='País de Origem'),
                        yaxis=dict(title='Percentual em peso nas importações'),
                        margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
                        width=800)
     data = []
     data.append(go.Bar({
-        'x': df['PaisOrigem'],
-        'y': df['pesototal'],
+        'x': df_ncmpesopais['PaisOrigem'],
+        'y': df_ncmpesopais['pesototal'],
         'name': 'Movimentação por país de origem'
     }))
     return {
@@ -33,11 +41,6 @@ def update_pesopaises_graph():
         'layout': layout
     }
 
-lista_sql = pd.read_sql('SELECT * FROM relatorios ORDER BY ID', db)
-sql = lista_sql['sql'][1]
-queries = []
-for index, name in enumerate(lista_sql['nome']):
-    queries.append({'label': name, 'value': index})
 
 app.layout = html.Div([
     dcc.Dropdown(
