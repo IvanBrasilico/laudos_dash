@@ -69,6 +69,7 @@ def graph_ncmlaudos():
     data.append(go.Scatter({
         'x': diagx,
         'y': diagy,
+        'name': 'linha de equilíbrio'
     }))
     return {
         'data': data,

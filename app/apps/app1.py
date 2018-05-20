@@ -31,6 +31,9 @@ layout = html.Div([
               figure=go.Figure(graphs.update_ncmpaises_graph())
               ),
     html.H6('Histórico de importação - gráfico peso por capítulo NCM'),
+    html.Div('Este gráfico mostra a relação entre histórico de movimentação'
+             ' por peso na importação e quantidade de Laudos. Pontos abaixo'
+             ' da linha têm uma baixa relação de laudos por peso importado.'),
     dcc.Graph(id='laudosncm-graph',
               figure=go.Figure(graphs.graph_ncmlaudos())
               ),
