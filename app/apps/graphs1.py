@@ -54,7 +54,9 @@ def graph_ncmlaudos():
     max_peso = peso_laudos.max()
     max_qtde = qtde_laudos.max()
     ratio = max_qtde / max_peso
-    for r in range(max_peso):
+    diagx = []
+    diagy = []
+    for r in range(int(max_peso)):
         diagx.append(r)
         diagy.append(r * ratio)
     data.append(go.Scatter({
