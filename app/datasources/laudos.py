@@ -1,27 +1,26 @@
+"""Este módulo carrega as estatísticas do sistema Laudos.
+
+Este módulo acessa o Banco de Dados do sistema Laudos e
+carrega dataframes com estatísticas destes dados.
+
+No caso do sistema Laudos, há uma tabela que já contém algumas
+intruções SQL contendo estatísticas/agregações interessantes,
+que será carregada para uma lista, podendo ser exibida em uma 
+lista(Select Combo) para o usuário escolher.
+
+A variável descricao informa origem dos dados e todos os dataframes
+começam com df_, facilitando sua utilização com code completion.
+
+"""
+from collections import defaultdict
+
 import pandas as pd
 import MySQLdb
 
 db = MySQLdb.connect('localhost', 'root', 'ivan1234')
 db.select_db('LAUDOS')
 
-
-# Movimentação importação: peso por país de Origem
-sql = 'SELECT p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
-    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem) * 100, 2) ' + \
-    'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem c ' + \
-    'INNER JOIN paises p ON p.codpais = c.codpais ' + \
-    'GROUP BY PaisOrigem ' + \
-    'ORDER BY pesototal DESC; '
-df_pesopais = pd.read_sql(sql, db)
-
-# Movimentação importação: peso por capítulo NCM
-sql = 'SELECT codcapncm, truncate(sum(pesoliqmercimp) /  ' + \
-    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem) * 100, 2) ' + \
-    'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem ' +\
-    'GROUP BY codcapncm ' + \
-    'ORDER BY pesototal DESC; '
-df_pesoncm = pd.read_sql(sql, db)
-
+descricao = "Fonte: base de dados do sistema Laudos, produção"
 
 # Laudos: qtde por capítulo NCM
 sql = 'SELECT SUBSTRING(ncm, 1, 2) AS codcapncm, COUNT(*) as total ' + \
@@ -32,20 +31,19 @@ df_qtdelaudos = pd.read_sql(sql, db)
 df_qtdelaudos['codcapncm'] = pd.to_numeric(df_qtdelaudos['codcapncm'], downcast='integer')
 #print(df_qtdelaudos)
 
-df_laudos_x_peso = df_qtdelaudos.merge(df_pesoncm, on='codcapncm')
-
 # Recupera relatórios gravados no Banco de Dados
 lista_sql = pd.read_sql('SELECT * FROM relatorios ORDER BY ID', db)
-sql = lista_sql['sql'][1]
-queries = []
+# sql = lista_sql['sql'][1]
+queries = defaultdict(list)
 for index, name in enumerate(lista_sql['nome']):
-    queries.append({'label': name, 'value': index})
+    queries[lista_sql['tipo'][index]].append({'label': name, 'value': index})
 
 class Tabela:
     def __init__(self, nome, descricao):
         self.nome = nome
         self.descricao = descricao
-        self.valor = pd.read_sql('SELECT count(*) as cont FROM ' + nome, db)
+        df = pd.read_sql('SELECT count(*) as cont FROM ' + nome, db)
+        self.valor = int(df['cont'])
 
 tabelas = [
     Tabela('sats', 'Pedidos de assistência Laboratorial'),

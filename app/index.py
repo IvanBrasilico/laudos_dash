@@ -5,7 +5,7 @@ from dash.dependencies import Input, Output
 from flask import abort
 
 from app.app import app
-from app.apps import app1, app2
+from app.apps import app1, app2, app3
 
 
 app.layout = html.Div([
@@ -24,7 +24,7 @@ def display_page(pathname):
     if pathname == '/apps/pag2':
          return app2.layout
     if pathname == '/apps/pag3':
-         return app2.layout
+         return app3.layout
     return abort(404)
 
 if __name__ == '__main__':

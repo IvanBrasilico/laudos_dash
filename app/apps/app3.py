@@ -10,19 +10,20 @@ from app.datasources import laudos
 
 layout = html.Div([
     html.Div(dcc.Link('Início', href='/apps/pag1')),
-    html.Div(dcc.Link('Tempo no fluxo de trabalho por ano e mês', href='/apps/pag3')),
-    html.H3('Consultas na base Laudo - Quantidade por ano de um fator'),
+    html.Div(dcc.Link('Estatísticas de quantidades por ano', href='/apps/pag2')),
+    html.H3('Consultas na base Laudo. Tempo em dias por ano e mês no fluxo de trabalho'),
     html.Div([
         html.P('Selecione o fator a visualizar.\n'),
         html.P('Em seguida, selecione um ou mais anos a desenhar no gráfico.')
     ]),
     dcc.Dropdown(
-        id='query',
-        options=laudos.queries[1],
+        id='query2',
+        options=laudos.queries[2],
         value=0,
     ),
     dcc.Dropdown(
-        id='years',
+        id='years2',
+        # TODO: Get list of years from database
         options=[
             {'label': '2016', 'value': '2016'},
             {'label': '2017', 'value': '2017'},
@@ -32,31 +33,36 @@ layout = html.Div([
         multi=True
 
     ),
-    dcc.Graph(id='years-graph'),
+    dcc.Graph(id='workflow-graph'),
 ], style={'width': '800'})
 
 
-@app.callback(Output('years-graph', 'figure'), [Input('years', 'value'), Input('query', 'value')])
+@app.callback(Output('workflow-graph', 'figure'), [Input('years2', 'value'), Input('query2', 'value')])
 def update_my_graph(selected_dropdown_value, query_value):
     data = []
     sql = laudos.lista_sql['sql'][query_value]
     df = pd.read_sql(sql, laudos.db)
-    layout = go.Layout(xaxis=dict(type='category', title=df.columns[1]),
-                       yaxis=dict(title='Número de pedidos'),
+    layout = go.Layout(xaxis=dict(type='category', title='Mês'),
+                       yaxis=dict(title='tempo'),
                        margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
                        width=800)
     data = []
     for year in selected_dropdown_value:
-        df_filtered = df[df['Ano_Solicitacao'] == int(year)]
-        data.append(go.Bar({
+        df_filtered = df[df['Ano'] == int(year)]
+        trace1 = go.Scatter({
             'x': df_filtered[df.columns[1]],
-            'y': df_filtered.qtde,
-            'name': year
-        }))
-    return {
-        'data': data,
-        'layout': layout
-    }
+            'y': df_filtered['Envio'],
+            'name': year + 'tempo de envio'
+        })
+        trace2 = go.Scatter({
+            'x': df_filtered[df.columns[1]],
+            'y': df_filtered['Resposta'],
+            'name': year + 'tempo de resposta',
+        })
+        data.append(trace1)
+        data.append(trace2)
+        figure = go.Figure(data=data, layout=layout)
+    return figure
 
 
 app.css.append_css(

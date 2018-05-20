@@ -4,21 +4,35 @@ from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 
 
+import app.apps.graphs1 as graphs
 from app.app import app
-from app.apps.graphs1 import *
 
 layout = html.Div([
-    dcc.Link('Estatísticas de quantidades por ano e mês', href='/apps/pag2'),
+    html.Div(dcc.Link('Estatísticas de quantidades por ano',
+                      href='/apps/pag2')),
+    html.Div(dcc.Link('Tempo no fluxo de trabalho por ano e mês',
+                      href='/apps/pag3')),
     html.H3('DashBoard sistema Laudos'),
-    html.Div(id='app-1-display-value'),
+    html.Div([
+        html.H6('Bem vindo ao painel de informações do sistema Laudos'),
+        html.Div('Aqui estão disponíveis para visualização alguns números'
+                 ' referentes ao sistema.'),
+        dcc.Graph(id='tabela_geral', figure=graphs.graph_tabela_geral()),
+    ]),
+    html.Div(
+        id='app-1-display-value'),
+    html.H6('Histórico de importação - gráfico peso por país de origem'),
+
     dcc.Graph(id='pesopaises-graph',
-              figure=go.Figure(update_pesopaises_graph())
+              figure=go.Figure(graphs.update_pesopaises_graph())
               ),
+    html.H6('Histórico de importação - relação entre número de Laudos e peso do NCM'),
     dcc.Graph(id='pesoncm-graph',
-              figure=go.Figure(update_ncmpaises_graph())
+              figure=go.Figure(graphs.update_ncmpaises_graph())
               ),
+    html.H6('Histórico de importação - gráfico peso por capítulo NCM'),
     dcc.Graph(id='laudosncm-graph',
-              figure=go.Figure(graph_ncmlaudos())
+              figure=go.Figure(graphs.graph_ncmlaudos())
               ),
 
 ])
