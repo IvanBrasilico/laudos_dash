@@ -11,13 +11,25 @@ lista(Select Combo) para o usuário escolher.
 A variável descricao informa origem dos dados e todos os dataframes
 começam com df_, facilitando sua utilização com code completion.
 
+No Servidor, usar as variáveis de ambiente 
+LAUDOS, USER_LAUDOS e PASS_LAUDOS para conectar ao Servidor
+de Banco de Dados.
+
 """
+import os
 from collections import defaultdict
 
 import pandas as pd
 import MySQLdb
+host = os.environ.get('LAUDOS')
+user = os.environ.get('USER_LAUDOS')
+password = os.environ.get('PASS_LAUDOS')
 
-db = MySQLdb.connect('localhost', 'root', 'ivan1234')
+if host:
+    db = MySQLdb.connect(host, user, password)
+else:
+    db = MySQLdb.connect('localhost', 'root', 'ivan1234')
+
 db.select_db('LAUDOS')
 
 descricao = "Fonte: base de dados do sistema Laudos, produção"
