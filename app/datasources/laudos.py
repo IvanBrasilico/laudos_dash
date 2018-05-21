@@ -28,8 +28,9 @@ sql = 'SELECT SUBSTRING(ncm, 1, 2) AS codcapncm, COUNT(*) as total ' + \
     'GROUP BY SUBSTRING(ncm, 1, 2) ' + \
     'ORDER BY total DESC; '
 df_qtdelaudos = pd.read_sql(sql, db)
-df_qtdelaudos['codcapncm'] = pd.to_numeric(df_qtdelaudos['codcapncm'], downcast='integer')
-#print(df_qtdelaudos)
+df_qtdelaudos['codcapncm'] = pd.to_numeric(
+    df_qtdelaudos['codcapncm'], downcast='integer')
+# print(df_qtdelaudos)
 
 # Recupera relatórios gravados no Banco de Dados
 lista_sql = pd.read_sql('SELECT * FROM relatorios ORDER BY ID', db)
@@ -38,6 +39,7 @@ queries = defaultdict(list)
 for index, name in enumerate(lista_sql['nome']):
     queries[lista_sql['tipo'][index]].append({'label': name, 'value': index})
 
+
 class Tabela:
     def __init__(self, nome, descricao):
         self.nome = nome
@@ -45,12 +47,37 @@ class Tabela:
         df = pd.read_sql('SELECT count(*) as cont FROM ' + nome, db)
         self.valor = int(df['cont'])
 
+
+df_sats = pd.read_sql(
+    'SELECT count(*) as cont FROM sats WHERE estado!=6', db)
+tabela_sats = Tabela('sats', 'Pedidos de assistência Laboratorial')
+tabela_sats.valor = int(df_sats['cont'])
+df_itenssat = pd.read_sql(
+    'SELECT COUNT(*) as cont FROM itenssat WHERE satid in '
+    '(SELECT id FROM LAUDOS.sats WHERE estado !=6)', db)
+tabela_itenssat = Tabela(
+    'itenssat', 'Itens de Pedido de assistência Laboratorial')
+tabela_itenssat.valor = int(df_itenssat['cont'])
+
 tabelas = [
-    Tabela('sats', 'Pedidos de assistência Laboratorial'),
-    Tabela('itenssat', 'Itens de Pedido de assistência Laboratorial'),
+    tabela_sats,
+    tabela_itenssat,
     Tabela('resumoslaudo', 'Laudos laboratoriais recebidos'),
     Tabela('usuarios', 'Usuários do Sistema'),
 ]
+
+cells = defaultdict(list)
+for tabela in tabelas:
+    # cells['nome'].append(tabela.nome)
+    cells['Descrição'].append(tabela.descricao)
+    cells['Quantidade'].append(tabela.valor)
+
+sql = 'SELECT e.id as num, e.TipoEventoSAT as Estado, count(*) as Quantidade FROM sats s ' +\
+    'INNER JOIN enumerado e ON e.id = s.estado ' +\
+    'WHERE e.id != 6 ' +\
+    'GROUP BY e.id, e.TipoEventoSAT ' +\
+    'ORDER BY e.id'
+df_estados = pd.read_sql(sql, db)
 
 # Laudos: qtde por tipo e Ano
 sql = 'SELECT YEAR(datapedido) AS ano, Tipo, COUNT(*) as total ' + \
@@ -58,4 +85,5 @@ sql = 'SELECT YEAR(datapedido) AS ano, Tipo, COUNT(*) as total ' + \
     'GROUP BY YEAR(datapedido), Tipo ' + \
     'ORDER BY Ano, Tipo; '
 df_qtdeporanotipo = pd.read_sql(sql, db)
-df_qtdelaudos['codcapncm'] = pd.to_numeric(df_qtdelaudos['codcapncm'], downcast='integer')
+df_qtdelaudos['codcapncm'] = pd.to_numeric(
+    df_qtdelaudos['codcapncm'], downcast='integer')

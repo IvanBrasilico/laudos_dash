@@ -78,19 +78,47 @@ def graph_ncmlaudos():
 
 
 def graph_tabela_geral():
-    cells = defaultdict(list)
-    for tabela in laudos.tabelas:
-        cells['nome'].append(tabela.nome)
-        cells['descricao'].append(tabela.descricao)
-        cells['valor'].append(tabela.valor)
+    cells = laudos.cells
     data_table = go.Table(
         # header=dict(values=["Descrição", "Quantidade"]),
         cells=dict(values=[cells['descricao'], cells['valor']])
     )
     return go.Figure(data=[data_table])
 
-def html_tabela_geral():
-    pass
 
-def html_sat_porstate():
-    pass
+def generate_table_fromdf(dataframe, max_rows=10):
+    return html.Table(
+        # Header
+        [html.Tr([html.Th(col) for col in dataframe.columns])] +
+        # Body
+        [html.Tr([
+            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+        ]) for i in range(min(len(dataframe), max_rows))]
+    )
+
+def generate_table_fromdict(pdict: dict,  max_rows=10):
+    max_rows = min(
+        len(next(iter(pdict.values()))),
+        max_rows
+    )
+    return html.Table(
+        # Header
+        [html.Tr([html.Th(col) for col in pdict.keys()])] +
+        # Body
+        [html.Tr([
+            html.Td(item[i]) for key, item in pdict.items()
+        ]) for i in range(max_rows)]
+    )
+
+def generate_table_fromlist(columns, headers=None, max_rows=10):
+    if headers is None:
+        headers = []
+    return html.Table(
+        # Header
+        [html.Tr([html.Th(col) for col in headers])] +
+        # Body
+        [html.Tr([
+            html.Td(columns[col][line]) for col in len(columns)
+        ]) for line in range(min(len(columns[0]), max_rows))]
+    )
+
