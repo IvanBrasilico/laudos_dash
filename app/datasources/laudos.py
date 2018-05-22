@@ -5,13 +5,13 @@ carrega dataframes com estatísticas destes dados.
 
 No caso do sistema Laudos, há uma tabela que já contém algumas
 intruções SQL contendo estatísticas/agregações interessantes,
-que será carregada para uma lista, podendo ser exibida em uma 
+que será carregada para uma lista, podendo ser exibida em uma
 lista(Select Combo) para o usuário escolher.
 
 A variável descricao informa origem dos dados e todos os dataframes
 começam com df_, facilitando sua utilização com code completion.
 
-No Servidor, usar as variáveis de ambiente 
+No Servidor, usar as variáveis de ambiente
 LAUDOS, USER_LAUDOS e PASS_LAUDOS para conectar ao Servidor
 de Banco de Dados.
 
@@ -19,8 +19,9 @@ de Banco de Dados.
 import os
 from collections import defaultdict
 
-import pandas as pd
 import MySQLdb
+import pandas as pd
+
 host = os.environ.get('LAUDOS')
 user = os.environ.get('USER_LAUDOS')
 password = os.environ.get('PASS_LAUDOS')
@@ -32,7 +33,7 @@ else:
 
 db.select_db('LAUDOS')
 
-descricao = "Fonte: base de dados do sistema Laudos, produção"
+descricao = 'Fonte: base de dados do sistema Laudos, produção'
 
 # Laudos: qtde por capítulo NCM
 sql = 'SELECT SUBSTRING(ncm, 1, 2) AS codcapncm, COUNT(*) as total ' + \
@@ -53,7 +54,10 @@ for index, name in enumerate(lista_sql['nome']):
 
 
 class Tabela:
+    """Monta contagem de registros de tabelas."""
+
     def __init__(self, nome, descricao):
+        """Inicializa."""
         self.nome = nome
         self.descricao = descricao
         df = pd.read_sql('SELECT count(*) as cont FROM ' + nome, db)
@@ -84,8 +88,9 @@ for tabela in tabelas:
     cells['Descrição'].append(tabela.descricao)
     cells['Quantidade'].append(tabela.valor)
 
-sql = 'SELECT e.id as num, e.TipoEventoSAT as Estado, count(*) as Quantidade FROM sats s ' +\
-    'INNER JOIN enumerado e ON e.id = s.estado ' +\
+sql = \
+    'SELECT e.id as num, e.TipoEventoSAT as Estado, count(*) as Quantidade ' +\
+    'FROM sats s INNER JOIN enumerado e ON e.id = s.estado ' +\
     'WHERE e.id != 6 ' +\
     'GROUP BY e.id, e.TipoEventoSAT ' +\
     'ORDER BY e.id'

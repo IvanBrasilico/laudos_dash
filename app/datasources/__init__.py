@@ -10,5 +10,3 @@ Recomenda-se ser criado um módulo por fonte de informação a adicionar,
 por questões de organização.
 
 """
-from app.datasources import laudos
-from app.datasources import ncm

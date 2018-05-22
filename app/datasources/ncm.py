@@ -4,18 +4,19 @@ Este módulo acessa o Banco de Dados contendo as estatísticas
 históricas de importação por NCM e carrega dataframes com estes
 dados.
 
-# TODO: Atualizar base e registrar em alguma variável a fonte 
+# TODO: Atualizar base e registrar em alguma variável a fonte
 # dos dados e sua data
 
 """
 import pandas as pd
+
 from .laudos import db, df_qtdelaudos
 
-descricao = "Fonte: sistema Siscomex Importação. Data: verificar"
+descricao = 'Fonte: sistema Siscomex Importação. Data: verificar'
 
 # Movimentação importação: peso por país de Origem
 sql = 'SELECT p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
-    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem) * 100, 2) ' + \
+    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem)*100, 2) ' +\
     'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem c ' + \
     'INNER JOIN paises p ON p.codpais = c.codpais ' + \
     'GROUP BY PaisOrigem ' + \
@@ -24,7 +25,7 @@ df_pesopais = pd.read_sql(sql, db)
 
 # Movimentação importação: peso por capítulo NCM
 sql = 'SELECT codcapncm, truncate(sum(pesoliqmercimp) /  ' + \
-    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem) * 100, 2) ' + \
+    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem)*100, 2) ' +\
     'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem ' +\
     'GROUP BY codcapncm ' + \
     'ORDER BY pesototal DESC; '

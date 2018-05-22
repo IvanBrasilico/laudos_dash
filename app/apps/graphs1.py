@@ -1,11 +1,7 @@
-from collections import defaultdict
-import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
 import plotly.graph_objs as go
 
 from app.datasources import laudos, ncm
-from app.app import app
 
 
 def update_pesopaises_graph():
@@ -48,7 +44,6 @@ def graph_ncmlaudos():
                        margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
                        width=800)
     data = []
-    
     peso_laudos = ncm.df_laudos_x_peso['pesototal']
     qtde_laudos = ncm.df_laudos_x_peso['total']
     max_peso = peso_laudos.max()
@@ -96,11 +91,9 @@ def generate_table_fromdf(dataframe, max_rows=10):
         ]) for i in range(min(len(dataframe), max_rows))]
     )
 
-def generate_table_fromdict(pdict: dict,  max_rows=10):
-    max_rows = min(
-        len(next(iter(pdict.values()))),
-        max_rows
-    )
+
+def generate_table_fromdict(pdict: dict, max_rows=10):
+    max_rows = min(len(next(iter(pdict.values()))), max_rows)
     return html.Table(
         # Header
         [html.Tr([html.Th(col) for col in pdict.keys()])] +
@@ -109,6 +102,7 @@ def generate_table_fromdict(pdict: dict,  max_rows=10):
             html.Td(item[i]) for key, item in pdict.items()
         ]) for i in range(max_rows)]
     )
+
 
 def generate_table_fromlist(columns, headers=None, max_rows=10):
     if headers is None:
@@ -121,4 +115,3 @@ def generate_table_fromlist(columns, headers=None, max_rows=10):
             html.Td(columns[col][line]) for col in len(columns)
         ]) for line in range(min(len(columns[0]), max_rows))]
     )
-

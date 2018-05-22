@@ -1,17 +1,18 @@
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
-import plotly.graph_objs as go
 import pandas as pd
+import plotly.graph_objs as go
+from dash.dependencies import Input, Output
 
 from app.app import app
 from app.datasources import laudos
 
-
 layout = html.Div([
     html.Div(dcc.Link('Início', href='/apps/pag1')),
-    html.Div(dcc.Link('Estatísticas de quantidades por ano', href='/apps/pag2')),
-    html.H3('Consultas na base Laudo. Tempo em dias por ano e mês no fluxo de trabalho'),
+    html.Div(dcc.Link('Estatísticas de quantidades por ano',
+                      href='/apps/pag2')),
+    html.H3('Consultas na base Laudo.' +
+            'Tempo em dias por ano e mês no fluxo de trabalho'),
     html.Div([
         html.P('Selecione o fator a visualizar.\n'),
         html.P('Em seguida, selecione um ou mais anos a desenhar no gráfico.')
@@ -37,7 +38,8 @@ layout = html.Div([
 ], style={'width': '800'})
 
 
-@app.callback(Output('workflow-graph', 'figure'), [Input('years2', 'value'), Input('query2', 'value')])
+@app.callback(Output('workflow-graph', 'figure'),
+              [Input('years2', 'value'), Input('query2', 'value')])
 def update_my_graph(selected_dropdown_value, query_value):
     data = []
     sql = laudos.lista_sql['sql'][query_value]
