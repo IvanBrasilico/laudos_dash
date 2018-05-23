@@ -12,7 +12,7 @@ import pandas as pd
 
 from .laudos import db, df_qtdelaudos
 
-descricao = 'Fonte: sistema Siscomex Importação. Data: verificar'
+descricao = 'Fonte: DW Aduaneiro. Data: verificar (os dados de valor estão simulados)'
 
 # Movimentação importação: peso por país de Origem
 sql = 'SELECT p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
@@ -31,3 +31,8 @@ sql = 'SELECT codcapncm, truncate(sum(pesoliqmercimp) /  ' + \
     'ORDER BY pesototal DESC; '
 df_pesoncm = pd.read_sql(sql, db)
 df_laudos_x_peso = df_qtdelaudos.merge(df_pesoncm, on='codcapncm')
+
+# US$/kg importação capítulo NCM - dados simulados, extrair...
+import numpy as np
+capsncm = set(df_pesoncm['codcapncm'])
+dict_valorncm = {cap: np.random.normal(8, 2.5, 1000) for cap in capsncm}

@@ -3,6 +3,7 @@ import dash_html_components as html
 
 
 menu = html.Div([
+    html.Div([
     html.Div('LAUDOS DASHBOARD',
              className='two columns'),
     html.Div(dcc.Link('Página inicial - resumo',
@@ -15,7 +16,14 @@ menu = html.Div([
                       href='/apps/pag3'),
              className='three columns'),
     html.Div('',
-             className='two columns'),
-], className='row')
+             className='two columns')],
+    className='row',
+    style={'font-size': '110%'}),
+    html.Hr()]
+)
 
-style = []
+
+style = {'class': 'conteiner',
+         'text-align': 'left',
+         'border-radius': '10px',
+         'margin': '50px'}

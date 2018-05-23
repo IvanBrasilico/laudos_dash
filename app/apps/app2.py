@@ -32,10 +32,7 @@ layout = html.Div([
 
     ),
     dcc.Graph(id='years-graph'),
-],     style={'class': 'conteiner',
-              'text-align': 'center',
-              'border-radius': '10px',
-              'margin': '50px'}
+],     style=style
 )
 
 
@@ -47,7 +44,7 @@ def update_my_graph(selected_dropdown_value, query_value):
     df = pd.read_sql(sql, laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title=df.columns[1]),
                        yaxis=dict(title='Número de pedidos'),
-                       margin={'l': 150, 'r': 0, 't': 20, 'b': 150})
+                       margin={'l': 100, 'r': 50, 't': 50, 'b': 150})
     data = []
     for year in selected_dropdown_value:
         df_filtered = df[df['Ano_Solicitacao'] == int(year)]

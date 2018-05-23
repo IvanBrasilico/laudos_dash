@@ -34,10 +34,7 @@ layout = html.Div([
 
     ),
     dcc.Graph(id='workflow-graph'),
-], style={'class': 'conteiner',
-          'text-align': 'center',
-          'border-radius': '10px',
-          'margin': '50px'}
+], style=style
 )
 
 

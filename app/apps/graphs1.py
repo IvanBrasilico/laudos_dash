@@ -1,5 +1,6 @@
 import dash_html_components as html
 import plotly.graph_objs as go
+from dash.dependencies import Input, Output
 
 from app.datasources import laudos, ncm
 
@@ -7,8 +8,7 @@ from app.datasources import laudos, ncm
 def update_pesopaises_graph():
     layout = go.Layout(xaxis=dict(type='category', title='País de Origem'),
                        yaxis=dict(title='Percentual em peso nas importações'),
-                       margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
-                       width=800)
+                       margin={'l': 50, 'r': 10, 't': 10, 'b': 150})
     data = []
     data.append(go.Bar({
         'x': ncm.df_pesopais['PaisOrigem'],
@@ -21,11 +21,10 @@ def update_pesopaises_graph():
     }
 
 
-def update_ncmpaises_graph():
+def update_pesoncm_graph():
     layout = go.Layout(xaxis=dict(type='category', title='Capítulo NCM'),
                        yaxis=dict(title='Percentual em peso nas importações'),
-                       margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
-                       width=800)
+                       margin={'l': 50, 'r': 10, 't': 10, 'b': 150})
     data = []
     data.append(go.Bar({
         'x': ncm.df_pesoncm['codcapncm'],
@@ -46,9 +45,21 @@ def graph_ncmlaudos():
     data = []
     peso_laudos = ncm.df_laudos_x_peso['pesototal']
     qtde_laudos = ncm.df_laudos_x_peso['total']
+    sizes = [int(ncm.dict_valorncm[capncm].mean())
+             for capncm in ncm.df_laudos_x_peso['codcapncm']]
     max_peso = peso_laudos.max()
-    max_qtde = qtde_laudos.max()
-    ratio = max_qtde / max_peso
+    qtde_total = qtde_laudos.sum()
+    ratio = qtde_total / 100
+    print(ratio)
+    colors = []
+    for peso, qtde in zip(peso_laudos, qtde_laudos):
+        if peso == 0:
+            peso = 1
+        razao_qtde = min(((qtde / ratio / peso) * 30), 200)
+        colors.append('rgb(' +
+                      str(255 - razao_qtde) +
+                      ', ' +
+                      str(razao_qtde)+ ', 10)')
     diagx = []
     diagy = []
     for r in range(int(max_peso)):
@@ -58,8 +69,9 @@ def graph_ncmlaudos():
         'x': peso_laudos,
         'y': qtde_laudos,
         'text': ncm.df_laudos_x_peso['codcapncm'],
-        'name': 'Movimentação NCM x Qtde de Laudos',
-        'mode': 'markers'
+        'name': 'Peso NCM x Qtde Laudos',
+        'mode': 'markers',
+        'marker': {'size': sizes, 'color': colors}
     }))
     data.append(go.Scatter({
         'x': diagx,
