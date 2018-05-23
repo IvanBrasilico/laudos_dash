@@ -6,12 +6,11 @@ from dash.dependencies import Input, Output
 
 from app.app import app
 from app.datasources import laudos
+from app.apps.layout import menu, style
 
 layout = html.Div([
-    html.Div(dcc.Link('Início', href='/apps/pag1')),
-    html.Div(dcc.Link('Estatísticas de quantidades por ano',
-                      href='/apps/pag2')),
-    html.H3('Consultas na base Laudo.' +
+    menu,
+    html.H3('Consultas na base Laudo. ' +
             'Tempo em dias por ano e mês no fluxo de trabalho'),
     html.Div([
         html.P('Selecione o fator a visualizar.\n'),
@@ -20,7 +19,7 @@ layout = html.Div([
     dcc.Dropdown(
         id='query2',
         options=laudos.queries[2],
-        value=0,
+        value=laudos.queries[2][0]['value'],
     ),
     dcc.Dropdown(
         id='years2',
@@ -35,7 +34,11 @@ layout = html.Div([
 
     ),
     dcc.Graph(id='workflow-graph'),
-], style={'width': '800'})
+], style={'class': 'conteiner',
+          'text-align': 'center',
+          'border-radius': '10px',
+          'margin': '50px'}
+)
 
 
 @app.callback(Output('workflow-graph', 'figure'),
@@ -46,8 +49,8 @@ def update_my_graph(selected_dropdown_value, query_value):
     df = pd.read_sql(sql, laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title='Mês'),
                        yaxis=dict(title='tempo'),
-                       margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
-                       width=800)
+                       margin={'l': 80, 'r': 0, 't': 20, 'b': 80}
+                       )
     data = []
     for year in selected_dropdown_value:
         df_filtered = df[df['Ano'] == int(year)]
@@ -65,7 +68,3 @@ def update_my_graph(selected_dropdown_value, query_value):
         data.append(trace2)
         figure = go.Figure(data=data, layout=layout)
     return figure
-
-
-app.css.append_css(
-    {'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'})

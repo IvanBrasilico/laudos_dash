@@ -25,6 +25,9 @@ def display_page(pathname):
         return app3.layout
     return abort(404)
 
+app.css.append_css(
+    {'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'})
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

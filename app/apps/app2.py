@@ -6,11 +6,10 @@ from dash.dependencies import Input, Output
 
 from app.app import app
 from app.datasources import laudos
+from app.apps.layout import menu, style
 
 layout = html.Div([
-    html.Div(dcc.Link('Início', href='/apps/pag1')),
-    html.Div(dcc.Link('Tempo no fluxo de trabalho por ano e mês',
-                      href='/apps/pag3')),
+    menu,
     html.H3('Consultas na base Laudo - Quantidade por ano de um fator'),
     html.Div([
         html.P('Selecione o fator a visualizar.\n'),
@@ -33,7 +32,11 @@ layout = html.Div([
 
     ),
     dcc.Graph(id='years-graph'),
-], style={'width': '800'})
+],     style={'class': 'conteiner',
+              'text-align': 'center',
+              'border-radius': '10px',
+              'margin': '50px'}
+)
 
 
 @app.callback(Output('years-graph', 'figure'),
@@ -44,8 +47,7 @@ def update_my_graph(selected_dropdown_value, query_value):
     df = pd.read_sql(sql, laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title=df.columns[1]),
                        yaxis=dict(title='Número de pedidos'),
-                       margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
-                       width=800)
+                       margin={'l': 150, 'r': 0, 't': 20, 'b': 150})
     data = []
     for year in selected_dropdown_value:
         df_filtered = df[df['Ano_Solicitacao'] == int(year)]
