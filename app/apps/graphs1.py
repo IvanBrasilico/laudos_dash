@@ -50,7 +50,6 @@ def graph_ncmlaudos():
     max_peso = peso_laudos.max()
     qtde_total = qtde_laudos.sum()
     ratio = qtde_total / 100
-    print(ratio)
     colors = []
     for peso, qtde in zip(peso_laudos, qtde_laudos):
         if peso == 0:
