@@ -137,8 +137,8 @@ def update_paisncm_graph(hoverData):
     if opais:
         codpais = ncm.df_pais_x_peso.loc[ncm.df_pais_x_peso['PaisOrigem'] == opais]['codpais'].values[0]
         df_filtered = ncm.df_pesoncmpais[ncm.df_pesoncmpais['codpais'] == codpais]
-        print('##########', codpais)
-        print('##########', df_filtered)
+        # print('##########', codpais)
+        # print('##########', df_filtered)
         data.append(go.Bar({
             'y': df_filtered['pesototal'],
             'x': df_filtered['codcapncm'],
