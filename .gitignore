@@ -100,3 +100,5 @@ ENV/
 # mypy
 .mypy_cache/
 laudos.bat
+updatecodigo.sql
+laudos_scripts.bat
