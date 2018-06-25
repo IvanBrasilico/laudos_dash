@@ -12,6 +12,8 @@ import pandas as pd
 
 from .laudos import db, df_qtdelaudos, df_qtdelaudospais
 
+CAMINHO = 'D:/Users/25052288840/Downloads'
+
 descricao = 'Fonte: DW Aduaneiro. Data: verificar (os dados de valor estão simulados)'
 
 # Movimentação importação: peso por país de Origem
@@ -45,3 +47,20 @@ df_pesoncmpais = pd.read_sql(sql, db)
 import numpy as np
 capsncm = set(df_pesoncm['codcapncm'])
 dict_valorncm = {cap: np.random.normal(8, 2.5, 1000) for cap in capsncm}
+
+
+class DataSet:
+    def __init__(self, descricao):
+        self.descricao = descricao
+    
+    def load(self):
+        pass
+    
+
+class NCMDataSet(DataSet):
+
+    def load(self):
+        self.df_ncmpesopais = pd.read_excel(
+            os.path.join(CAMINHO, 'NCM.xls'),
+            header=4
+        )
