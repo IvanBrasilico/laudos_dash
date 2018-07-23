@@ -20,11 +20,11 @@ layout = html.Div(
          html.Div([
              html.H6('Números gerais do sistema Laudos'),
              html.Div(graphs.generate_table_fromdict(laudos.cells)),
-             html.Div(graphs.generate_table_fromdf(laudos.df_qtdeportipo)),
+             html.Div(graphs.generate_table_fromdf(laudos.data.df('qtdeportipo'))),
          ], className='six columns'),
          html.Div([
              html.H6('Número de Pedidos de Laudo por Andamento'),
-             html.Div(graphs.generate_table_fromdf(laudos.df_estados)),
+             html.Div(graphs.generate_table_fromdf(laudos.data.df('estados'))),
          ], className='six columns'),
      ]),
      html.Div(

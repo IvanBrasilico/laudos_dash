@@ -21,6 +21,7 @@ from collections import defaultdict
 
 import MySQLdb
 import pandas as pd
+from app.datasources import Data, SqlSource, QtdeLaudosSource
 
 host = os.environ.get('LAUDOS')
 user = os.environ.get('USER_LAUDOS')
@@ -33,25 +34,43 @@ else:
 
 db.select_db('LAUDOS')
 
-descricao = 'Fonte: base de dados do sistema Laudos, produção'
+data = Data(db, 'Fonte: base de dados do sistema Laudos, produção')
 
+sql = {}
 # Laudos: qtde por capítulo NCM
 sql = 'SELECT SUBSTRING(ncm, 1, 2) AS codcapncm, COUNT(*) as total ' + \
     'FROM LAUDOS.itenssat ' + \
     'GROUP BY SUBSTRING(ncm, 1, 2) ' + \
     'ORDER BY total DESC; '
-df_qtdelaudos = pd.read_sql(sql, db)
-df_qtdelaudos['codcapncm'] = pd.to_numeric(
-    df_qtdelaudos['codcapncm'], downcast='integer')
-# print(df_qtdelaudos)
-
-
+data.add_source(QtdeLaudosSource('qtdelaudos', sql))
+sql_dict = {}
 # Laudos: qtde por país
-sql = 'SELECT origemid as codpais, COUNT(*) as total ' + \
+sql_dict['qtdelaudospais'] = 'SELECT origemid as codpais, COUNT(*) as total ' + \
     'FROM LAUDOS.itenssat ' + \
     'GROUP BY origemid ' + \
     'ORDER BY total DESC; '
-df_qtdelaudospais = pd.read_sql(sql, db)
+#Laudos: qtde por estado
+sql_dict['estados'] = \
+    'SELECT e.id as num, e.TipoEventoSAT as Estado, count(*) as Quantidade ' +\
+    'FROM sats s INNER JOIN enumerado e ON e.id = s.estado ' +\
+    'WHERE e.id != 6 ' +\
+    'GROUP BY e.id, e.TipoEventoSAT ' +\
+    'ORDER BY e.id'
+# Laudos: qtde por tipo
+sql_dict['qtdeportipo'] = 'SELECT e.TipoSAT as Tipo, COUNT(*) as total ' + \
+    'FROM sats s ' + \
+    'INNER JOIN enumerado e ON e.id = s.Tipo ' +\
+    'WHERE s.estado != 6 ' +\
+    'GROUP BY e.TipoSAT;'
+# Laudos: qtde por tipo e Ano
+sql_dict['qtdeporanotipo'] = 'SELECT YEAR(datapedido) AS ano, Tipo, COUNT(*) as total ' + \
+    'FROM LAUDOS.sats ' + \
+    'GROUP BY YEAR(datapedido), Tipo ' + \
+    'ORDER BY Ano, Tipo; '
+for name, sql in sql_dict.items():
+    source = SqlSource(name, sql)
+    data.add_source(source)
+data.load()
 
 # Recupera relatórios gravados no Banco de Dados
 lista_sql = pd.read_sql('SELECT * FROM relatorios ORDER BY ID', db)
@@ -95,32 +114,4 @@ for tabela in tabelas:
     # cells['nome'].append(tabela.nome)
     cells['Descrição'].append(tabela.descricao)
     cells['Quantidade'].append(tabela.valor)
-
-#Laudos: qtde por estado
-sql = \
-    'SELECT e.id as num, e.TipoEventoSAT as Estado, count(*) as Quantidade ' +\
-    'FROM sats s INNER JOIN enumerado e ON e.id = s.estado ' +\
-    'WHERE e.id != 6 ' +\
-    'GROUP BY e.id, e.TipoEventoSAT ' +\
-    'ORDER BY e.id'
-df_estados = pd.read_sql(sql, db)
-
-
-# Laudos: qtde por tipo
-sql = 'SELECT e.TipoSAT as Tipo, COUNT(*) as total ' + \
-    'FROM sats s ' + \
-    'INNER JOIN enumerado e ON e.id = s.Tipo ' +\
-    'WHERE s.estado != 6 ' +\
-    'GROUP BY e.TipoSAT;'
-df_qtdeportipo = pd.read_sql(sql, db)
-
-
-# Laudos: qtde por tipo e Ano
-sql = 'SELECT YEAR(datapedido) AS ano, Tipo, COUNT(*) as total ' + \
-    'FROM LAUDOS.sats ' + \
-    'GROUP BY YEAR(datapedido), Tipo ' + \
-    'ORDER BY Ano, Tipo; '
-df_qtdeporanotipo = pd.read_sql(sql, db)
-df_qtdelaudos['codcapncm'] = pd.to_numeric(
-    df_qtdelaudos['codcapncm'], downcast='integer')
 

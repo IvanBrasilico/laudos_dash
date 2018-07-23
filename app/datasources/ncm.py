@@ -8,15 +8,17 @@ dados.
 # dos dados e sua data
 
 """
+import os
 import pandas as pd
 
-from .laudos import db, df_qtdelaudos, df_qtdelaudospais
+from .laudos import db, data
 
-CAMINHO = 'D:/Users/25052288840/Downloads'
+CAMINHO = os.path.dirname(__file__)
 
 descricao = 'Fonte: DW Aduaneiro. Data: verificar (os dados de valor estão simulados)'
 
 # Movimentação importação: peso por país de Origem
+
 sql = 'SELECT c.codpais as codpais, p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
     '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem)*100, 2) ' +\
     'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem c ' + \
@@ -24,7 +26,7 @@ sql = 'SELECT c.codpais as codpais, p.nompais as PaisOrigem, truncate(sum(pesoli
     'GROUP BY codpais, PaisOrigem ' + \
     'ORDER BY pesototal DESC; '
 df_pesopais = pd.read_sql(sql, db)
-df_pais_x_peso = df_qtdelaudospais.merge(df_pesopais, on='codpais')
+df_pais_x_peso = data.df('qtdelaudospais').merge(df_pesopais, on='codpais')
 
 # Movimentação importação: peso por capítulo NCM
 sql = 'SELECT codcapncm, truncate(sum(pesoliqmercimp) /  ' + \
@@ -33,7 +35,7 @@ sql = 'SELECT codcapncm, truncate(sum(pesoliqmercimp) /  ' + \
     'GROUP BY codcapncm ' + \
     'ORDER BY pesototal DESC; '
 df_pesoncm = pd.read_sql(sql, db)
-df_laudos_x_peso = df_qtdelaudos.merge(df_pesoncm, on='codcapncm')
+df_laudos_x_peso = data.df('qtdelaudos').merge(df_pesoncm, on='codcapncm')
 
 
 # Movimentação importação: peso por capítulo NCM
@@ -64,3 +66,12 @@ class NCMDataSet(DataSet):
             os.path.join(CAMINHO, 'NCM.xls'),
             header=4
         )
+        self.df_pesopais = self.df_ncmpesopais.groupby(
+            ['COD PAIS ORIG DEST', 'PAIS ORIGEM DESTINO'], as_index=False
+        )['PESO LIQ MERC IMP'].sum()
+        self.df_pesopais.columns = ['codpais', 'PaisOrigem', 'pesototal']
+        self.df_pais_x_peso = data.df('qtdelaudospais').merge(self.df_pesopais,
+                                                      on='codpais')
+
+ncmdataset = NCMDataSet(descricao)
+ncmdataset.load()

@@ -11,8 +11,8 @@ def update_pesopaises_graph():
                        margin={'l': 50, 'r': 10, 't': 10, 'b': 150})
     data = []
     data.append(go.Bar({
-        'x': ncm.df_pesopais['PaisOrigem'],
-        'y': ncm.df_pesopais['pesototal'],
+        'x': ncm.ncmdataset.df_pesopais['PaisOrigem'],
+        'y': ncm.ncmdataset.df_pesopais['pesototal'],
         'name': 'Movimentação por país de origem'
     }))
     return {

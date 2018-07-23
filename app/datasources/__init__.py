@@ -10,3 +10,51 @@ Recomenda-se ser criado um módulo por fonte de informação a adicionar,
 por questões de organização.
 
 """
+import pandas as pd
+class Data():
+    def __init__(self, db, descricao=''):
+        self.db = db
+        self.descricao = descricao
+        self.sources = {}
+
+    def load(self):
+        for name, src in self.sources.items():
+            print('Loading %s ' % name)
+            src.load(self.db)
+
+    def load_source(self, name):
+        src = self.sources[name]
+        src.load(self.db)
+
+    def add_source(self, source):
+        self.sources[source.name] = source
+    
+    def rm_source(self, name):
+        self.sources.pop(name)
+
+    def df(self, name):
+        return self.sources[name].df
+
+class Source():
+    def __init__(self, name):
+        self.df = None
+        self.name = name
+    def load(self, db):
+        raise NotImplemented('Não implementado!')
+
+class SqlSource(Source):
+
+    def __init__(self, name, sql):
+        Source.__init__(self, name)
+        self.sql = sql
+
+    def load(self, db):
+        self.df = pd.read_sql(self.sql, db)
+    
+class QtdeLaudosSource(SqlSource):
+    def load(self, db):
+        SqlSource.load(self, db)
+        self.df['codcapncm'] = pd.to_numeric(
+            self.df['codcapncm'], downcast='integer'
+        )
+
