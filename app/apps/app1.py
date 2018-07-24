@@ -33,7 +33,7 @@ layout = html.Div(
          'Abaixo seguem alguns dados sobre histórico de importações'),
      html.Div(
          'O objetivo é poder comparar o histórico de importações com'
-         ' os dados do sistema Laudos. ' + ncm.descricao),
+         ' os dados do sistema Laudos. ' + ncm.datancm.descricao),
      html.Div([
          html.Div([html.H6(
              'Histórico de importações - Peso por país de origem'),
@@ -137,6 +137,7 @@ def update_paisncm_graph(hoverData):
     if opais:
         codpais = ncm.df_pais_x_peso.loc[ncm.df_pais_x_peso['PaisOrigem'] == opais]['codpais'].values[0]
         df_filtered = ncm.df_pesoncmpais[ncm.df_pesoncmpais['codpais'] == codpais]
+        df_filtered['pesototal'] = df_filtered['pesototal'] / df_filtered['pesototal'].sum()
         # print('##########', codpais)
         # print('##########', df_filtered)
         data.append(go.Bar({

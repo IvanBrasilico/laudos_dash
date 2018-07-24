@@ -1,3 +1,4 @@
+import math
 import dash_html_components as html
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
@@ -11,8 +12,8 @@ def update_pesopaises_graph():
                        margin={'l': 50, 'r': 10, 't': 10, 'b': 150})
     data = []
     data.append(go.Bar({
-        'x': ncm.ncmdataset.df_pesopais['PaisOrigem'],
-        'y': ncm.ncmdataset.df_pesopais['pesototal'],
+        'x': ncm.datancm.df('df_pesopais')['PaisOrigem'],
+        'y': ncm.datancm.df('df_pesopais')['pesototal'],
         'name': 'Movimentação por país de origem'
     }))
     return {
@@ -54,8 +55,9 @@ def colors_por_ratio(peso_ncm, qtde_laudos, ratio):
         colors.append('rgb(' +
                       str(255 - razao_qtde) +
                       ', ' +
-                      str(razao_qtde)+ ', 10)')
+                      str(razao_qtde) + ', 10)')
     return colors
+
 
 def markers_size_por_valor(codcapncm):
     """Retorna uma matriz de números.
@@ -63,10 +65,19 @@ def markers_size_por_valor(codcapncm):
     O número será maior de acordo com o valor médio do NCM
 
     """
-    media_geral = 8
-    return [int((ncm.dict_valorncm[capncm].mean() / media_geral) * 10)
-            for capncm in codcapncm]
-    
+    media_geral = .5  # ncm.df_valor['PRECO DOLAR /Kg IMP'].mean()
+    marker_sizes = []
+    for capncm in codcapncm:
+        marker_ncm = int(
+            math.log(2.8 + (ncm.dict_valorncm[capncm].mean() / media_geral))
+            ) * 6
+        if marker_ncm < 6:
+            marker_ncm = 6
+        elif marker_ncm > 30:
+            marker_ncm = 30
+        marker_sizes.append(marker_ncm)
+    return marker_sizes
+
 
 def graph_ncmlaudos():
     layout = go.Layout(yaxis=dict(title='Laudos (qtde)'),
@@ -74,7 +85,7 @@ def graph_ncmlaudos():
                        margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
                        width=800)
     data = []
-    peso_ncm = ncm.df_laudos_x_peso['pesototal']
+    peso_ncm = ncm.df_laudos_x_peso['pesototal'] * 100
     qtde_laudos = ncm.df_laudos_x_peso['total']
     sizes = markers_size_por_valor(ncm.df_laudos_x_peso['codcapncm'])
     max_peso = peso_ncm.max()
@@ -87,7 +98,7 @@ def graph_ncmlaudos():
         diagx.append(r)
         diagy.append(r * ratio)
     data.append(go.Scatter({
-        'x': peso_ncm,
+        'x': ['%.2f' % peso for peso in peso_ncm],
         'y': qtde_laudos,
         'text': ncm.df_laudos_x_peso['codcapncm'],
         'name': 'Peso NCM x Qtde Laudos',
@@ -111,7 +122,7 @@ def graph_paislaudos():
                        margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
                        width=800)
     data = []
-    peso_ncm = ncm.df_pais_x_peso['pesototal']
+    peso_ncm = ncm.df_pais_x_peso['pesototal'] * 100
     qtde_laudos = ncm.df_pais_x_peso['total']
     # sizes = markers_size_por_valor(ncm.df_pais_x_peso['PaisOrigem'])
     sizes = 10
@@ -121,11 +132,11 @@ def graph_paislaudos():
     colors = colors_por_ratio(peso_ncm, qtde_laudos, ratio)
     diagx = []
     diagy = []
-    for r in range(int(max_peso)):
+    for r in range(min(int(max_peso), 100)):
         diagx.append(r)
         diagy.append(r * ratio)
     data.append(go.Scatter({
-        'x': peso_ncm,
+        'x': ['%.2f' % peso for peso in peso_ncm],
         'y': qtde_laudos,
         'text': ncm.df_pais_x_peso['PaisOrigem'],
         'name': 'Peso NCM x Qtde Laudos',

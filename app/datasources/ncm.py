@@ -10,68 +10,76 @@ dados.
 """
 import os
 import pandas as pd
+import numpy as np
 
 from .laudos import db, data
+from app.datasources import Data, FunctionSource
 
 CAMINHO = os.path.dirname(__file__)
+df_ncm = pd.read_excel(os.path.join(CAMINHO, 'NCM.xlsx'), header=4)
+df_ncm['PESO LIQ MERC IMP POR'] = df_ncm['PESO LIQ MERC IMP'] / \
+    df_ncm['PESO LIQ MERC IMP'].sum()  # Converter para porcentagem
+df_ncm['COD PAIS ORIG DEST'] = pd.to_numeric(
+    df_ncm['COD PAIS ORIG DEST'], errors='coerce')
 
-descricao = 'Fonte: DW Aduaneiro. Data: verificar (os dados de valor estão simulados)'
 
+datancm = Data('Fonte: DW Aduaneiro. Data: 24/07/2018 (NCM Peso 2016-2018)' +
+               ' (os dados de valor estão simulados)', CAMINHO
+               )
+
+print('Loading peso por país de Origem')
 # Movimentação importação: peso por país de Origem
-
-sql = 'SELECT c.codpais as codpais, p.nompais as PaisOrigem, truncate(sum(pesoliqmercimp) /  ' + \
-    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem)*100, 2) ' +\
-    'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem c ' + \
-    'INNER JOIN paises p ON p.codpais = c.codpais ' + \
-    'GROUP BY codpais, PaisOrigem ' + \
-    'ORDER BY pesototal DESC; '
-df_pesopais = pd.read_sql(sql, db)
+df_pesopais = df_ncm.groupby(
+    ['COD PAIS ORIG DEST', 'PAIS ORIGEM DESTINO'], as_index=False
+)['PESO LIQ MERC IMP POR'].sum()
+df_pesopais.columns = ['codpais', 'PaisOrigem', 'pesototal']
+df_pesopais = df_pesopais.sort_values(by='pesototal', ascending=False)
 df_pais_x_peso = data.df('qtdelaudospais').merge(df_pesopais, on='codpais')
 
-# Movimentação importação: peso por capítulo NCM
-sql = 'SELECT codcapncm, truncate(sum(pesoliqmercimp) /  ' + \
-    '(SELECT sum(pesoliqmercimp) FROM LAUDOS.CapNCMImpPaisOrigem)*100, 2) ' +\
-    'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem ' +\
-    'GROUP BY codcapncm ' + \
-    'ORDER BY pesototal DESC; '
-df_pesoncm = pd.read_sql(sql, db)
+
+def load_pesopais(caminho):
+    return df_pesopais
+
+
+datancm.add_source(FunctionSource('df_pesopais', load_pesopais))
+datancm.load()
+
+# def load_pesoncm(caminho):
+df_pesoncm = df_ncm.groupby(
+    ['COD CAPIT NCM', 'CAPITULO NCM'], as_index=False
+)['PESO LIQ MERC IMP POR'].sum()
+df_pesoncm.columns = ['codcapncm', 'CapituloNCM', 'pesototal']
+df_pesoncm = df_pesoncm.sort_values(by='pesototal', ascending=False)
 df_laudos_x_peso = data.df('qtdelaudos').merge(df_pesoncm, on='codcapncm')
 
 
-# Movimentação importação: peso por capítulo NCM
-sql = 'SELECT codcapncm, codpais, sum(pesoliqmercimp) ' + \
-    'as pesototal FROM LAUDOS.CapNCMImpPaisOrigem ' +\
-    'GROUP BY codcapncm, codpais ' + \
-    'ORDER BY pesototal DESC; '
-df_pesoncmpais = pd.read_sql(sql, db)
+# Movimentação importação: peso por ncm e pais
+df_pesoncmpais = df_ncm.groupby(
+    ['COD PAIS ORIG DEST',
+     'PAIS ORIGEM DESTINO',
+     'COD CAPIT NCM',
+     'CAPITULO NCM'], as_index=False
+)['PESO LIQ MERC IMP'].sum()
+df_pesoncmpais.columns = ['codpais', 'PaisOrigem',
+                          'codcapncm', 'CapituloNCM', 'pesototal']
+df_pesoncmpais = df_pesoncmpais.sort_values(
+    by=['codpais', 'pesototal'], ascending=False)
+
+#########################
+# US$/kg importação capítulo NCM - dados simulados, extrair...
+
+
+def get_valor_capncnm(capncm):
+    # Retira outliers
+    valores = df_valor[df_valor['COD CAPIT NCM'] == capncm]['PRECO DOLAR /Kg IMP']
+    valores_sem_outliers = valores[np.abs(valores - valores.mean()) <= (2 * valores.std())]
+    return valores_sem_outliers
+
 
 # US$/kg importação capítulo NCM - dados simulados, extrair...
-import numpy as np
 capsncm = set(df_pesoncm['codcapncm'])
-dict_valorncm = {cap: np.random.normal(8, 2.5, 1000) for cap in capsncm}
-
-
-class DataSet:
-    def __init__(self, descricao):
-        self.descricao = descricao
-    
-    def load(self):
-        pass
-    
-
-class NCMDataSet(DataSet):
-
-    def load(self):
-        self.df_ncmpesopais = pd.read_excel(
-            os.path.join(CAMINHO, 'NCM.xls'),
-            header=4
-        )
-        self.df_pesopais = self.df_ncmpesopais.groupby(
-            ['COD PAIS ORIG DEST', 'PAIS ORIGEM DESTINO'], as_index=False
-        )['PESO LIQ MERC IMP'].sum()
-        self.df_pesopais.columns = ['codpais', 'PaisOrigem', 'pesototal']
-        self.df_pais_x_peso = data.df('qtdelaudospais').merge(self.df_pesopais,
-                                                      on='codpais')
-
-ncmdataset = NCMDataSet(descricao)
-ncmdataset.load()
+# dict_valorncm = {cap: np.random.normal(8, 2.5, 1000) for cap in capsncm}
+df_valor7 = pd.read_excel(os.path.join(CAMINHO, 'valor7b.xlsx'), header=4)
+df_valor13 = pd.read_excel(os.path.join(CAMINHO, 'valor1324b.xlsx'), header=4)
+df_valor = pd.concat([df_valor7, df_valor13])
+dict_valorncm = {cap: get_valor_capncnm(cap) for cap in capsncm}

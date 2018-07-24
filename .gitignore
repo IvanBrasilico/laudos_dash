@@ -102,4 +102,5 @@ ENV/
 laudos.bat
 updatecodigo.sql
 laudos_scripts.bat
-app/datasources/NCM.xls
+*.xls
+*.xlsx

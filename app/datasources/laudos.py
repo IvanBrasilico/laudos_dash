@@ -34,7 +34,7 @@ else:
 
 db.select_db('LAUDOS')
 
-data = Data(db, 'Fonte: base de dados do sistema Laudos, produção')
+data = Data('Fonte: base de dados do sistema Laudos, produção', db)
 
 sql = {}
 # Laudos: qtde por capítulo NCM

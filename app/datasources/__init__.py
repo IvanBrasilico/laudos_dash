@@ -12,7 +12,7 @@ por questões de organização.
 """
 import pandas as pd
 class Data():
-    def __init__(self, db, descricao=''):
+    def __init__(self, descricao='', db=None):
         self.db = db
         self.descricao = descricao
         self.sources = {}
@@ -39,7 +39,7 @@ class Source():
     def __init__(self, name):
         self.df = None
         self.name = name
-    def load(self, db):
+    def load(self, conn):
         raise NotImplemented('Não implementado!')
 
 class SqlSource(Source):
@@ -58,3 +58,11 @@ class QtdeLaudosSource(SqlSource):
             self.df['codcapncm'], downcast='integer'
         )
 
+class FunctionSource(Source):
+
+    def __init__(self, name, function):
+        Source.__init__(self, name)
+        self.function = function
+
+    def load(self, conn):
+        self.df = self.function(conn)
