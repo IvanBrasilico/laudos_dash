@@ -65,14 +65,11 @@ def markers_size_por_valor(codcapncm):
     O número será maior de acordo com o valor médio do NCM
 
     """
-    media_geral = .5  # ncm.df_valor['PRECO DOLAR /Kg IMP'].mean()
     marker_sizes = []
     for capncm in codcapncm:
-        marker_ncm = int(
-            math.log(2.8 + (ncm.dict_valorncm[capncm].mean() / media_geral))
-            ) * 6
-        if marker_ncm < 6:
-            marker_ncm = 6
+        marker_ncm = ncm.dict_valorncm[capncm].mean() * 5
+        if marker_ncm < 4:
+            marker_ncm = 4
         elif marker_ncm > 30:
             marker_ncm = 30
         marker_sizes.append(marker_ncm)
@@ -101,14 +98,14 @@ def graph_ncmlaudos():
         'x': ['%.2f' % peso for peso in peso_ncm],
         'y': qtde_laudos,
         'text': ncm.df_laudos_x_peso['codcapncm'],
-        'name': 'Peso NCM x Qtde Laudos',
+        'name': 'Imp. x Laudos',
         'mode': 'markers',
         'marker': {'size': sizes, 'color': colors}
     }))
     data.append(go.Scatter({
         'x': diagx,
         'y': diagy,
-        'name': 'linha de equilíbrio'
+        'name': 'Equilíbrio'
     }))
     return {
         'data': data,
@@ -139,14 +136,14 @@ def graph_paislaudos():
         'x': ['%.2f' % peso for peso in peso_ncm],
         'y': qtde_laudos,
         'text': ncm.df_pais_x_peso['PaisOrigem'],
-        'name': 'Peso NCM x Qtde Laudos',
+        'name': 'Imp. x Laudos',
         'mode': 'markers',
         'marker': {'size': sizes, 'color': colors}
     }))
     data.append(go.Scatter({
         'x': diagx,
         'y': diagy,
-        'name': 'linha de equilíbrio'
+        'name': 'Equilíbrio'
     }))
     return {
         'data': data,

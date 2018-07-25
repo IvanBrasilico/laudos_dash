@@ -20,7 +20,8 @@ layout = html.Div(
          html.Div([
              html.H6('Números gerais do sistema Laudos'),
              html.Div(graphs.generate_table_fromdict(laudos.cells)),
-             html.Div(graphs.generate_table_fromdf(laudos.data.df('qtdeportipo'))),
+             html.Div(graphs.generate_table_fromdf(
+                 laudos.data.df('qtdeportipo'))),
          ], className='six columns'),
          html.Div([
              html.H6('Número de Pedidos de Laudo por Andamento'),
@@ -61,9 +62,9 @@ layout = html.Div(
          html.Div(dcc.Graph(id='ncmlaudos-graph',
                             figure=go.Figure(graphs.graph_ncmlaudos())
                             ),
-                  className='seven columns'),
+                  className='eight columns'),
          html.Div(dcc.Graph(id='valorncm-graph'),
-                  className='five columns'),
+                  className='four columns'),
      ]),
      html.H6('Histórico de importação -' +
              ' Relação entre número de Laudos e peso do país'),
@@ -77,9 +78,9 @@ layout = html.Div(
          html.Div(dcc.Graph(id='paiseslaudos-graph',
                             figure=go.Figure(graphs.graph_paislaudos())
                             ),
-                  className='seven columns'),
+                  className='eight columns'),
          html.Div(dcc.Graph(id='paisncm-graph'),
-                  className='five columns'),
+                  className='four columns'),
      ])
      ],
     style=style
@@ -94,17 +95,23 @@ def update_valorncm_graph(hoverData):
     for point in hoverData['points']:
         if point.get('text'):
             oncm = point.get('text')
-    layout = go.Layout(
-        title='Valores US$/kg do capítulo NCM',
-        xaxis=dict(
-            title='US$/kg capítulo ' + str(oncm)
-        ),
-        yaxis=dict(
-            title='Qtde adições'
-        ),
-        margin={'l': 50, 'r': 40, 't': 70, 'b': 70})
     data = []
+    layout = []
     if oncm:
+        dftitlex = ncm.df_ncm[ncm.df_ncm['COD CAPIT NCM'] == oncm]['CAPITULO NCM']
+        if dftitlex.count() > 0:
+            titlex = dftitlex.tolist()[0]
+        print(titlex)
+        layout = go.Layout(
+            title='Valores US$/kg do capítulo NCM %d - média %.2f' %
+            (oncm, ncm.dict_valorncm[oncm].mean()),
+            xaxis=dict(
+                title=titlex
+            ),
+            yaxis=dict(
+                title='Qtde adições'
+            ),
+            margin={'l': 50, 'r': 40, 't': 70, 'b': 70})
         data.append(go.Histogram({
             'x': ncm.dict_valorncm[oncm],
             'name': str(oncm),
@@ -135,9 +142,11 @@ def update_paisncm_graph(hoverData):
         margin={'l': 50, 'r': 40, 't': 70, 'b': 70})
     data = []
     if opais:
-        codpais = ncm.df_pais_x_peso.loc[ncm.df_pais_x_peso['PaisOrigem'] == opais]['codpais'].values[0]
+        codpais = ncm.df_pais_x_peso.loc[ncm.df_pais_x_peso['PaisOrigem']
+                                         == opais]['codpais'].values[0]
         df_filtered = ncm.df_pesoncmpais[ncm.df_pesoncmpais['codpais'] == codpais]
-        df_filtered['pesototal'] = df_filtered['pesototal'] / df_filtered['pesototal'].sum()
+        df_filtered['pesototal'] = df_filtered['pesototal'] / \
+            df_filtered['pesototal'].sum()
         # print('##########', codpais)
         # print('##########', df_filtered)
         data.append(go.Bar({
