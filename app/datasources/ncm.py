@@ -79,7 +79,11 @@ def get_valor_capncnm(capncm):
 # US$/kg importação capítulo NCM - dados simulados, extrair...
 capsncm = set(df_pesoncm['codcapncm'])
 # dict_valorncm = {cap: np.random.normal(8, 2.5, 1000) for cap in capsncm}
+df_valor1 = pd.read_excel(os.path.join(CAMINHO, 'v12.xlsx'), header=4)
 df_valor7 = pd.read_excel(os.path.join(CAMINHO, 'v7b.xlsx'), header=4)
+df_valor11 = pd.read_excel(os.path.join(CAMINHO, 'v111518.xlsx'), header=4)
 df_valor13 = pd.read_excel(os.path.join(CAMINHO, 'v1324b.xlsx'), header=4)
-df_valor = pd.concat([df_valor7, df_valor13])
+df_valor22 = pd.read_excel(os.path.join(CAMINHO, 'v22263031.xlsx'), header=4)
+df_valor = pd.concat([df_valor1, df_valor7,
+                      df_valor11, df_valor13, df_valor22])
 dict_valorncm = {cap: get_valor_capncnm(cap) for cap in capsncm}
