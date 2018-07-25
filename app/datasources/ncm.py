@@ -24,7 +24,7 @@ df_ncm['COD PAIS ORIG DEST'] = pd.to_numeric(
 
 
 datancm = Data('Fonte: DW Aduaneiro. Extração: 24/07/2018 (NCM Peso 2016-2018)' +
-               ' (Valor: amostra de DIs 201809-12)', CAMINHO
+               ' (Valor: amostra de DIs último trimestre 2017)', CAMINHO
                )
 
 print('Loading peso por país de Origem')
