@@ -19,7 +19,8 @@ de Banco de Dados.
 import os
 from collections import defaultdict
 
-import MySQLdb
+# import MySQLdb
+import mysql.connector as MySQLdb
 import pandas as pd
 from app.datasources import Data, SqlSource, QtdeLaudosSource
 
@@ -28,11 +29,11 @@ user = os.environ.get('USER_LAUDOS')
 password = os.environ.get('PASS_LAUDOS')
 
 if host:
-    db = MySQLdb.connect(host, user, password)
+    db = MySQLdb.connect(host=host, user=user, password=password, db='LAUDOS')
 else:
-    db = MySQLdb.connect('localhost', 'root', 'ivan1234')
+    db = MySQLdb.connect(host='localhost', user='root', password='sala123')
 
-db.select_db('LAUDOS')
+# db.select_db('LAUDOS')
 
 data = Data('Fonte: base de dados do sistema Laudos, produção', db)
 
