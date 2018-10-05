@@ -7,7 +7,7 @@ import plotly.graph_objs as go
 import pandas as pd
 import MySQLdb
 
-db = MySQLdb.connect('localhost', 'root', 'ivan1234')
+db = MySQLdb.connect('10.61.12.154', 'usr_Laudos', 'usr_Laudos')
 db.select_db('LAUDOS')
 app = dash.Dash('Laudos DashBoard')
 def update_pesopaises_graph():
