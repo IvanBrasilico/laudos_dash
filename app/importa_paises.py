@@ -24,4 +24,5 @@ with open('./paises.sql', 'wt') as paises_out:
     for linha in lista_paises:
         paises_out.write(
             'INSERT INTO paises (ID, codigo, nome)' +
-            'VALUES ({}, {}, "{}")'.format(linha[0], linha[0], linha[1]) + ';\n')
+            'VALUES ({}, {}, "{}")'.format(linha[0],
+                                           linha[0], linha[1]) + ';\n')
