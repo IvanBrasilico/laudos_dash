@@ -4,7 +4,7 @@ from dash.dependencies import Input, Output
 from flask import abort
 
 from app.app import app
-from app.apps import app1, app2, app3
+from app.apps import app1, app2, app3, app4, app5
 
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),
@@ -23,6 +23,10 @@ def display_page(pathname):
         return app2.layout
     if pathname == '/apps/pag3':
         return app3.layout
+    if pathname == '/apps/pag4':
+        return app4.layout
+    if pathname == '/apps/pag5':
+        return app5.layout
     return abort(404)
 
 app.css.append_css(

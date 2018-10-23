@@ -86,3 +86,40 @@ layout = html.Div(
     style=style
 )
 
+
+@app.callback(
+    Output('paisncm-graph', 'figure'),
+    [Input('paiseslaudos-graph', 'hoverData')])
+def update_paisncm_graph(hoverData):
+    opais = None
+    for point in hoverData['points']:
+        if point.get('text'):
+            opais = point.get('text')
+    layout = go.Layout(
+        title='Peso do capítulo NCM na importação do país',
+        xaxis=dict(
+            type='category', title='Capítulo NCM ' + str(opais)
+        ),
+        yaxis=dict(
+            title='Peso total'
+        ),
+        margin={'l': 50, 'r': 40, 't': 70, 'b': 70})
+    data = []
+    if opais:
+        codpais = ncm.df_pais_x_peso.loc[ncm.df_pais_x_peso['PaisOrigem']
+                                         == opais]['codpais'].values[0]
+        df_filtered = ncm.df_pesoncmpais[ncm.df_pesoncmpais['codpais'] == codpais]
+        df_filtered['pesototal'] = df_filtered['pesototal'] / \
+                                   df_filtered['pesototal'].sum()
+        # print('##########', codpais)
+        # print('##########', df_filtered)
+        data.append(go.Bar({
+            'y': df_filtered['pesototal'],
+            'x': df_filtered['codcapncm'],
+            'name': opais,
+            # 'histnorm': 'probability'
+        }))
+    return {
+        'data': data,
+        'layout': layout
+    }

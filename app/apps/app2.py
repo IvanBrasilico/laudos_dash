@@ -8,6 +8,8 @@ from app.app import app
 from app.datasources import laudos
 from app.apps.layout import menu, style
 
+unidade = '1'
+
 layout = html.Div([
     menu,
     html.H3('Consultas na base Laudo - Quantidade por ano de um fator'),
@@ -41,7 +43,8 @@ layout = html.Div([
 def update_my_graph(selected_dropdown_value, query_value):
     data = []
     sql = laudos.lista_sql['sql'][query_value]
-    df = pd.read_sql(sql, laudos.db)
+    sql = sql.replace('%unidade%', unidade)
+    df = pd.read_sql(sql, con=laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title=df.columns[1]),
                        yaxis=dict(title='Número de pedidos'),
                        margin={'l': 100, 'r': 50, 't': 50, 'b': 150})
