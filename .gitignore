@@ -99,6 +99,8 @@ ENV/
 
 # mypy
 .mypy_cache/
+.idea/*
+.vscode/*
 laudos.bat
 updatecodigo.sql
 laudos_scripts.bat
