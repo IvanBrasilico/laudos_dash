@@ -53,7 +53,7 @@ def update_discordanciancm_graph():
     }
 
 
-def update_discordanciancm_graph():
+def update_discordanciapais_graph():
     layout = go.Layout(xaxis=dict(type='category', title='Discordância País'),
                        yaxis=dict(title='Percentual de discordância por País'),
                        margin={'l': 50, 'r': 10, 't': 10, 'b': 150})
