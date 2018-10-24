@@ -8,16 +8,16 @@ html.Div([
             dcc.Link('Resumo', href='/apps/pag1')
         ]),
         html.Li([
-            dcc.Link('Qtde ano/mês', href='/apps/pag2')
+            dcc.Link('Qtde anual/fatores', href='/apps/pag2')
         ]),
         html.Li([
-            dcc.Link('Tempos ano/mês', href='/apps/pag3')
+            dcc.Link('Tempos ano/mês fluxo', href='/apps/pag3')
         ]),
         html.Li([
-            dcc.Link('Análise NCM', href='/apps/pag3')
+            dcc.Link('Análise NCM', href='/apps/pag4')
         ]),
         html.Li([
-            dcc.Link('Análise País', href='/apps/pag3')
+            dcc.Link('Análise País', href='/apps/pag5')
         ]),
     ], className='nav navbar-nav')
 ], className='navbar navbar-default navbar-static-top')

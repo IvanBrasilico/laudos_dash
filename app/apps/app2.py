@@ -12,7 +12,7 @@ unidade = '1'
 
 layout = html.Div([
     menu,
-    html.H3('Consultas na base Laudo - Quantidade por ano de um fator'),
+    html.H3('Consultas na base Laudo - Quantidade por mês/ano de um fator'),
     html.Div([
         html.P('Selecione o fator a visualizar.\n'),
         html.P('Em seguida, selecione um ou mais anos a desenhar no gráfico.')
@@ -24,11 +24,7 @@ layout = html.Div([
     ),
     dcc.Dropdown(
         id='years',
-        options=[
-            {'label': '2016', 'value': '2016'},
-            {'label': '2017', 'value': '2017'},
-            {'label': '2018', 'value': '2018'}
-        ],
+        options= laudos.years,
         value=['2018'],
         multi=True
 

@@ -26,11 +26,7 @@ layout = html.Div([
     dcc.Dropdown(
         id='years2',
         # TODO: Get list of years from database
-        options=[
-            {'label': '2016', 'value': '2016'},
-            {'label': '2017', 'value': '2017'},
-            {'label': '2018', 'value': '2018'}
-        ],
+        options= laudos.years,
         value=['2018'],
         multi=True
 
@@ -46,7 +42,7 @@ def update_my_graph(selected_dropdown_value, query_value):
     data = []
     sql = laudos.lista_sql['sql'][query_value]
     sql = sql.replace('%unidade%', unidade)
-    df = pd.read_sql(sql, con=laudos.db, params=[1])
+    df = pd.read_sql(sql, con=laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title='Mês'),
                        yaxis=dict(title='tempo'),
                        margin={'l': 80, 'r': 0, 't': 20, 'b': 80}

@@ -37,6 +37,37 @@ def update_pesoncm_graph():
         'layout': layout
     }
 
+def update_discordanciancm_graph():
+    layout = go.Layout(xaxis=dict(type='category', title='Discordância NCM'),
+                       yaxis=dict(title='Percentual de discordância por NCM'),
+                       margin={'l': 50, 'r': 10, 't': 10, 'b': 150})
+    data = []
+    data.append(go.Bar({
+        'x': laudos.df_discordanciancm['Capitulo_NCM'],
+        'y': laudos.df_discordanciancm['percentual'],
+        'name': 'Discordância por Capítulo NCM'
+    }))
+    return {
+        'data': data,
+        'layout': layout
+    }
+
+
+def update_discordanciancm_graph():
+    layout = go.Layout(xaxis=dict(type='category', title='Discordância País'),
+                       yaxis=dict(title='Percentual de discordância por País'),
+                       margin={'l': 50, 'r': 10, 't': 10, 'b': 150})
+    data = []
+    data.append(go.Bar({
+        'x': laudos.df_discordanciapais['PaisdeOrigem'],
+        'y': laudos.df_discordanciapais['percentual'],
+        'name': 'Discordância por país de origem'
+    }))
+    return {
+        'data': data,
+        'layout': layout
+    }
+
 
 def colors_por_ratio(peso_ncm, qtde_laudos, ratio):
     """Define um gradiente de cor.

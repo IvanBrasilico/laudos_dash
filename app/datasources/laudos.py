@@ -19,8 +19,8 @@ de Banco de Dados.
 import os
 from collections import defaultdict
 
-# import MySQLdb
-import mysql.connector as MySQLdb
+import MySQLdb
+# import mysql.connector as MySQLdb
 import pandas as pd
 from app.datasources import Data, SqlSource, QtdeLaudosSource
 
@@ -37,37 +37,50 @@ else:
 
 data = Data('Fonte: base de dados do sistema Laudos, produção', db)
 
-sql = {}
+years = \
+    [
+        {'label': '2016', 'value': '2016'},
+        {'label': '2017', 'value': '2017'},
+        {'label': '2018', 'value': '2018'}
+    ]
+
+# Laudos: qtde por capítulo NCM
+sql = 'SELECT DISTINCT YEAR(DataPedido) as year FROM LAUDOS.sats;'
+df_years = pd.read_sql(sql, db)
+df_years = df_years.dropna()
+years = [{'label': '{:0}'.format(int(year)),
+          'value': '{:0}'.format(int(year))} for year in df_years['year']]
+
 # Laudos: qtde por capítulo NCM
 sql = 'SELECT SUBSTRING(ncm, 1, 2) AS codcapncm, COUNT(*) as total ' + \
-    'FROM LAUDOS.itenssat ' + \
-    'GROUP BY SUBSTRING(ncm, 1, 2) ' + \
-    'ORDER BY total DESC; '
+      'FROM LAUDOS.itenssat ' + \
+      'GROUP BY SUBSTRING(ncm, 1, 2) ' + \
+      'ORDER BY total DESC; '
 data.add_source(QtdeLaudosSource('qtdelaudos', sql))
 sql_dict = {}
 # Laudos: qtde por país
 sql_dict['qtdelaudospais'] = 'SELECT origemid as codpais, COUNT(*) as total ' + \
-    'FROM LAUDOS.itenssat ' + \
-    'GROUP BY origemid ' + \
-    'ORDER BY total DESC; '
-#Laudos: qtde por estado
+                             'FROM LAUDOS.itenssat ' + \
+                             'GROUP BY origemid ' + \
+                             'ORDER BY total DESC; '
+# Laudos: qtde por estado
 sql_dict['estados'] = \
-    'SELECT e.id as num, e.TipoEventoSAT as Estado, count(*) as Quantidade ' +\
-    'FROM sats s INNER JOIN enumerado e ON e.id = s.estado ' +\
-    'WHERE e.id != 6 ' +\
-    'GROUP BY e.id, e.TipoEventoSAT ' +\
+    'SELECT e.id as num, e.TipoEventoSAT as Estado, count(*) as Quantidade ' + \
+    'FROM sats s INNER JOIN enumerado e ON e.id = s.estado ' + \
+    'WHERE e.id != 6 ' + \
+    'GROUP BY e.id, e.TipoEventoSAT ' + \
     'ORDER BY e.id'
 # Laudos: qtde por tipo
 sql_dict['qtdeportipo'] = 'SELECT e.TipoSAT as Tipo, COUNT(*) as total ' + \
-    'FROM sats s ' + \
-    'INNER JOIN enumerado e ON e.id = s.Tipo ' +\
-    'WHERE s.estado != 6 ' +\
-    'GROUP BY e.TipoSAT;'
+                          'FROM sats s ' + \
+                          'INNER JOIN enumerado e ON e.id = s.Tipo ' + \
+                          'WHERE s.estado != 6 ' + \
+                          'GROUP BY e.TipoSAT;'
 # Laudos: qtde por tipo e Ano
 sql_dict['qtdeporanotipo'] = 'SELECT YEAR(datapedido) AS ano, Tipo, COUNT(*) as total ' + \
-    'FROM LAUDOS.sats ' + \
-    'GROUP BY YEAR(datapedido), Tipo ' + \
-    'ORDER BY Ano, Tipo; '
+                             'FROM LAUDOS.sats ' + \
+                             'GROUP BY YEAR(datapedido), Tipo ' + \
+                             'ORDER BY Ano, Tipo; '
 for name, sql in sql_dict.items():
     source = SqlSource(name, sql)
     data.add_source(source)
@@ -116,3 +129,29 @@ for tabela in tabelas:
     cells['Descrição'].append(tabela.descricao)
     cells['Quantidade'].append(tabela.valor)
 
+unidade = 1
+# Discordância NCM
+sql = \
+    f'''select SUBSTRING(i.ncm, 1, 2) AS Capitulo_NCM, 
+     sum(divergente)/ count(r.ID)AS percentual from sats s
+     INNER JOIN itenssat i ON s.ID = i.satid
+     INNER JOIN setores se ON se.ID = s.setor
+     inner join resumoslaudo r on s.id = r.satid
+     inner join divergencias d on r.id = d.resumolaudoid
+     AND s.unidade = {unidade} group by Capitulo_NCM
+     ORDER BY percentual DESC;
+    '''
+df_discordanciancm = pd.read_sql(sql, db)
+
+# Discordância País
+sql = \
+    f'''select o.descricao AS PaisdeOrigem,
+ sum(divergente)/ count(r.ID)AS percentual from sats s
+ INNER JOIN itenssat i ON s.ID = i.satid
+ INNER JOIN origens o ON o.ID = i.origemid
+ inner join resumoslaudo r on s.id = r.satid
+ inner join divergencias d on r.id = d.resumolaudoid
+ AND s.unidade = {unidade} group by PaisdeOrigem
+ ORDER BY percentual DESC;
+    '''
+df_discordanciapais = pd.read_sql(sql, db)

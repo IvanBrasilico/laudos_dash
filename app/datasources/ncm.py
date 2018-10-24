@@ -18,10 +18,9 @@ from app.datasources import Data, FunctionSource
 CAMINHO = os.path.dirname(__file__)
 df_ncm = pd.read_excel(os.path.join(CAMINHO, 'NCM.xlsx'), header=4)
 df_ncm['PESO LIQ MERC IMP POR'] = df_ncm['PESO LIQ MERC IMP'] / \
-    df_ncm['PESO LIQ MERC IMP'].sum()  # Converter para porcentagem
+                                  df_ncm['PESO LIQ MERC IMP'].sum()  # Converter para porcentagem
 df_ncm['COD PAIS ORIG DEST'] = pd.to_numeric(
     df_ncm['COD PAIS ORIG DEST'], errors='coerce')
-
 
 datancm = Data('Fonte: DW Aduaneiro. Extração: 24/07/2018 (NCM Peso 2016-2018)' +
                ' (Valor: amostra de DIs último trimestre 2017)', CAMINHO
@@ -52,7 +51,6 @@ df_pesoncm.columns = ['codcapncm', 'CapituloNCM', 'pesototal']
 df_pesoncm = df_pesoncm.sort_values(by='pesototal', ascending=False)
 df_laudos_x_peso = data.df('qtdelaudos').merge(df_pesoncm, on='codcapncm')
 
-
 # Movimentação importação: peso por ncm e pais
 df_pesoncmpais = df_ncm.groupby(
     ['COD PAIS ORIG DEST',
@@ -64,6 +62,7 @@ df_pesoncmpais.columns = ['codpais', 'PaisOrigem',
                           'codcapncm', 'CapituloNCM', 'pesototal']
 df_pesoncmpais = df_pesoncmpais.sort_values(
     by=['codpais', 'pesototal'], ascending=False)
+
 
 #########################
 # US$/kg importação capítulo NCM - dados simulados, extrair...

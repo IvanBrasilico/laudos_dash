@@ -20,7 +20,15 @@ layout = html.Div(
                              figure=go.Figure(
                                  graphs.update_pesoncm_graph())
                              )],
-                  className='twelve columns')
+                  className='six columns'),
+         html.Div([
+             html.Div([html.H6('Histórico de importações - Discordância por capítulo NCM'),
+                       dcc.Graph(id='discordanciancm-graph',
+                                 figure=go.Figure(
+                                     graphs.update_discordanciancm_graph())
+                                 )],
+                      className='six columns')
+         ]),
      ]),
      html.H6('Histórico de importação -' +
              ' Relação entre número de Laudos e peso do NCM'),
@@ -60,7 +68,7 @@ def update_valorncm_graph(hoverData):
         print(titlex)
         layout = go.Layout(
             title='Valores US$/kg do capítulo NCM %d - média %.2f' %
-            (oncm, ncm.dict_valorncm[oncm].mean()),
+                  (oncm, ncm.dict_valorncm[oncm].mean()),
             xaxis=dict(
                 title=titlex
             ),
