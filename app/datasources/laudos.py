@@ -19,8 +19,14 @@ de Banco de Dados.
 import os
 from collections import defaultdict
 
-import MySQLdb
-# import mysql.connector as MySQLdb
+"""
+import platform
+if platform == 'win32':
+    import mysql.connector as MySQLdb
+else:
+    import MySQLdb
+"""
+import mysql.connector as MySQLdb
 import pandas as pd
 from app.datasources import Data, SqlSource, QtdeLaudosSource
 

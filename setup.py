@@ -14,9 +14,12 @@ setup(
         'dash-renderer==0.12.1',
         'dash-html-components==0.10.1',
         'dash-core-components==0.22.1',
-        'mysqlclient',
+        # 'mysqlclient',
+        'mysql-connector',
+        'numpy',
         'pandas',
-        'plotly==2.2.3'
+        'plotly==2.2.3',
+        'xlrd'
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
