@@ -149,6 +149,7 @@ sql = \
     '''
 df_discordanciancm = pd.read_sql(sql, db)
 
+print('Discord país...')
 # Discordância País
 sql = \
     f'''select o.descricao AS PaisdeOrigem,
