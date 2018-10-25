@@ -137,7 +137,7 @@ for tabela in tabelas:
 
 # Discordância NCM
 sql = \
-    f'''select SUBSTRING(i.ncm, 1, 2) AS Capitulo_NCM, 
+    '''select SUBSTRING(i.ncm, 1, 2) AS Capitulo_NCM, 
      sum(divergente)/ count(r.ID)AS percentual from sats s
      INNER JOIN itenssat i ON s.ID = i.satid
      INNER JOIN setores se ON se.ID = s.setor
