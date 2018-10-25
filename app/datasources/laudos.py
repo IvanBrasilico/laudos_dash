@@ -135,7 +135,6 @@ for tabela in tabelas:
     cells['Descrição'].append(tabela.descricao)
     cells['Quantidade'].append(tabela.valor)
 
-unidade = 1
 # Discordância NCM
 sql = \
     f'''select SUBSTRING(i.ncm, 1, 2) AS Capitulo_NCM, 
@@ -144,7 +143,7 @@ sql = \
      INNER JOIN setores se ON se.ID = s.setor
      inner join resumoslaudo r on s.id = r.satid
      inner join divergencias d on r.id = d.resumolaudoid
-     AND s.unidade = {unidade} group by Capitulo_NCM
+     group by Capitulo_NCM
      ORDER BY percentual DESC;
     '''
 df_discordanciancm = pd.read_sql(sql, db)
@@ -152,13 +151,13 @@ df_discordanciancm = pd.read_sql(sql, db)
 print('Discord país...')
 # Discordância País
 sql = \
-    f'''select o.descricao AS PaisdeOrigem,
+    '''select o.descricao AS PaisdeOrigem,
  sum(divergente)/ count(r.ID)AS percentual from sats s
  INNER JOIN itenssat i ON s.ID = i.satid
  INNER JOIN origens o ON o.ID = i.origemid
  inner join resumoslaudo r on s.id = r.satid
  inner join divergencias d on r.id = d.resumolaudoid
- AND s.unidade = {unidade} group by PaisdeOrigem
+ group by PaisdeOrigem
  ORDER BY percentual DESC;
     '''
 df_discordanciapais = pd.read_sql(sql, db)
