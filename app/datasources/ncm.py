@@ -32,8 +32,9 @@ cap_ncm = \
         {'label': '27', 'value': 27.0},
         {'label': '85', 'value': 85.0}
     ]
+cod_caps_ncm = sorted(df_ncm['COD CAPIT NCM'].unique())
 cap_ncm = [{'label': str(value), 'value': value}
-           for value in df_ncm['COD CAPIT NCM'].unique()]
+           for value in cod_caps_ncm]
 
 print('Loading peso por país de Origem')
 # Movimentação importação: peso por país de Origem
