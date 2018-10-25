@@ -50,12 +50,26 @@ years = \
         {'label': '2018', 'value': '2018'}
     ]
 
-# Laudos: qtde por capítulo NCM
+# Laudos: anos contendo pedido de Laudo
 sql = 'SELECT DISTINCT YEAR(DataPedido) as year FROM LAUDOS.sats;'
 df_years = pd.read_sql(sql, db)
 df_years = df_years.dropna()
 years = [{'label': '{:0}'.format(int(year)),
           'value': '{:0}'.format(int(year))} for year in df_years['year']]
+
+unidades = \
+    [
+        {'label': 'ALFSTS', 'value': '1'},
+        {'label': 'ALF3', 'value': '91'},
+        {'label': 'ALF10', 'value': '100'}
+    ]
+
+# Laudos: unidades contendo pedido de Laudo
+sql = 'SELECT DISTINCT unidade, nome FROM LAUDOS.sats s ' \
+      'INNER JOIN LAUDOS.unidades u ON s.unidade=u.ID;'
+df_unidades = pd.read_sql(sql, db)
+unidades = [{'label': linha.nome,
+             'value': linha.unidade} for _, linha in df_unidades.iterrows()]
 
 # Laudos: qtde por capítulo NCM
 sql = 'SELECT SUBSTRING(ncm, 1, 2) AS codcapncm, COUNT(*) as total ' + \
@@ -135,30 +149,30 @@ for tabela in tabelas:
     cells['Descrição'].append(tabela.descricao)
     cells['Quantidade'].append(tabela.valor)
 
-unidade = 1
+print('Loading discordância NCM...')
 # Discordância NCM
 sql = \
-    f'''select SUBSTRING(i.ncm, 1, 2) AS Capitulo_NCM, 
+    '''select SUBSTRING(i.ncm, 1, 2) AS Capitulo_NCM, 
      sum(divergente)/ count(r.ID)AS percentual from sats s
      INNER JOIN itenssat i ON s.ID = i.satid
      INNER JOIN setores se ON se.ID = s.setor
      inner join resumoslaudo r on s.id = r.satid
      inner join divergencias d on r.id = d.resumolaudoid
-     AND s.unidade = {unidade} group by Capitulo_NCM
+     group by Capitulo_NCM
      ORDER BY percentual DESC;
     '''
 df_discordanciancm = pd.read_sql(sql, db)
 
-print('Discord país...')
+print('Loading discordância país...')
 # Discordância País
 sql = \
-    f'''select o.descricao AS PaisdeOrigem,
+    '''select o.descricao AS PaisdeOrigem,
  sum(divergente)/ count(r.ID)AS percentual from sats s
  INNER JOIN itenssat i ON s.ID = i.satid
  INNER JOIN origens o ON o.ID = i.origemid
  inner join resumoslaudo r on s.id = r.satid
  inner join divergencias d on r.id = d.resumolaudoid
- AND s.unidade = {unidade} group by PaisdeOrigem
+ group by PaisdeOrigem
  ORDER BY percentual DESC;
     '''
 df_discordanciapais = pd.read_sql(sql, db)

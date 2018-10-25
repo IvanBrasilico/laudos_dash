@@ -31,17 +31,23 @@ layout = html.Div([
         multi=True
 
     ),
+    dcc.Dropdown(
+        id='unidades2',
+        options=laudos.unidades,
+        value=1,
+        multi=False
+    ),
     dcc.Graph(id='workflow-graph'),
 ], style=style
 )
 
 
 @app.callback(Output('workflow-graph', 'figure'),
-              [Input('years2', 'value'), Input('query2', 'value')])
-def update_my_graph(selected_dropdown_value, query_value):
+              [Input('years2', 'value'), Input('query2', 'value'), Input('unidades2', 'value')])
+def update_my_graph(selected_dropdown_value, query_value, unidades_value):
     data = []
     sql = laudos.lista_sql['sql'][query_value]
-    sql = sql.replace('%unidade%', unidade)
+    sql = sql.replace('%unidade%', str(unidades_value))
     df = pd.read_sql(sql, con=laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title='Mês'),
                        yaxis=dict(title='tempo'),

@@ -10,6 +10,10 @@ from app.apps.layout import menu, style
 
 layout = html.Div(
     [menu,
+     html.H1('Análise de Países - Histórico de importações', style={'text-align': 'center'}),
+     html.Div(
+         'O objetivo é poder comparar o histórico de importações com'
+         ' os dados do sistema Laudos. ' + ncm.datancm.descricao),
      html.Div([
          html.Div([html.H6(
              'Histórico de importações - Peso por país de origem'),

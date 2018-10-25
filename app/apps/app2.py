@@ -8,11 +8,9 @@ from app.app import app
 from app.datasources import laudos
 from app.apps.layout import menu, style
 
-unidade = '1'
-
 layout = html.Div([
     menu,
-    html.H3('Consultas na base Laudo - Quantidade por mês/ano de um fator'),
+    html.H3('Consultas na base Laudo - Quantidade por ano de um fator'),
     html.Div([
         html.P('Selecione o fator a visualizar.\n'),
         html.P('Em seguida, selecione um ou mais anos a desenhar no gráfico.')
@@ -24,22 +22,28 @@ layout = html.Div([
     ),
     dcc.Dropdown(
         id='years',
-        options= laudos.years,
+        options=laudos.years,
         value=['2018'],
         multi=True
 
     ),
+    dcc.Dropdown(
+        id='unidades',
+        options=laudos.unidades,
+        value=1,
+        multi=False
+    ),
     dcc.Graph(id='years-graph'),
-],     style=style
+], style=style
 )
 
 
 @app.callback(Output('years-graph', 'figure'),
-              [Input('years', 'value'), Input('query', 'value')])
-def update_my_graph(selected_dropdown_value, query_value):
+              [Input('years', 'value'), Input('query', 'value'), Input('unidades', 'value')])
+def update_my_graph(selected_dropdown_value, query_value, unidades_value):
     data = []
     sql = laudos.lista_sql['sql'][query_value]
-    sql = sql.replace('%unidade%', unidade)
+    sql = sql.replace('%unidade%', str(unidades_value))
     df = pd.read_sql(sql, con=laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title=df.columns[1]),
                        yaxis=dict(title='Número de pedidos'),
