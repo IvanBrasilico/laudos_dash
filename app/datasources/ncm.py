@@ -26,6 +26,15 @@ datancm = Data('Fonte: DW Aduaneiro. Extração: 24/07/2018 (NCM Peso 2016-2018)
                ' (Valor: amostra de DIs último trimestre 2017)', CAMINHO
                )
 
+cap_ncm = \
+    [
+        {'label': '10', 'value': 10.0},
+        {'label': '27', 'value': 27.0},
+        {'label': '85', 'value': 85.0}
+    ]
+cap_ncm = [{'label': str(value), 'value': value}
+           for value in df_ncm['COD CAPIT NCM'].unique()]
+
 print('Loading peso por país de Origem')
 # Movimentação importação: peso por país de Origem
 df_pesopais = df_ncm.groupby(
@@ -68,7 +77,7 @@ df_pesoncmpais = df_pesoncmpais.sort_values(
 # US$/kg importação capítulo NCM - dados simulados, extrair...
 
 
-def get_valor_capncnm(capncm):
+def get_valor_capncnm(capncm, df_valor):
     # Retira outliers
     valores = df_valor[df_valor['COD CAPIT NCM'] == capncm]['PRECO DOLAR /Kg IMP']
     valores_sem_outliers = valores[np.abs(valores - valores.mean()) <= (2 * valores.std())]
@@ -78,6 +87,11 @@ def get_valor_capncnm(capncm):
 # US$/kg importação capítulo NCM - dados simulados, extrair...
 capsncm = set(df_pesoncm['codcapncm'])
 # dict_valorncm = {cap: np.random.normal(8, 2.5, 1000) for cap in capsncm}
+valor_files = [os.path.join(CAMINHO, file) for file in os.listdir(CAMINHO)
+               if file[0] == 'v' and file[-5:] == '.xlsx']
+print(valor_files)
+print('Loading planilhas de valor...')
+"""
 df_valor1 = pd.read_excel(os.path.join(CAMINHO, 'v12.xlsx'), header=4)
 df_valor7 = pd.read_excel(os.path.join(CAMINHO, 'v7b.xlsx'), header=4)
 df_valor11 = pd.read_excel(os.path.join(CAMINHO, 'v111518.xlsx'), header=4)
@@ -85,4 +99,7 @@ df_valor13 = pd.read_excel(os.path.join(CAMINHO, 'v1324b.xlsx'), header=4)
 df_valor22 = pd.read_excel(os.path.join(CAMINHO, 'v22263031.xlsx'), header=4)
 df_valor = pd.concat([df_valor1, df_valor7,
                       df_valor11, df_valor13, df_valor22])
-dict_valorncm = {cap: get_valor_capncnm(cap) for cap in capsncm}
+"""
+df_valor_list = [pd.read_excel(file, header=4) for file in valor_files]
+df_valor = pd.concat(df_valor_list)
+dict_valorncm = {cap: get_valor_capncnm(cap, df_valor) for cap in capsncm}

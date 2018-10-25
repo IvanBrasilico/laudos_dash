@@ -39,8 +39,17 @@ layout = html.Div(
               ' esfera representa o valor médio da importações. Clique em um'
               ' ponto para ter mais informações sobre este NCM'),
      html.Div([
+         dcc.Dropdown(
+             id='cap_ncm',
+             options=ncm.cap_ncm,
+             value=[],
+             multi=True
+         )
+     ]),
+     html.Div([
+
          html.Div(dcc.Graph(id='ncmlaudos-graph',
-                            figure=go.Figure(graphs.graph_ncmlaudos())
+                            # figure=go.Figure(graphs.graph_ncmlaudos())
                             ),
                   className='eight columns'),
          html.Div(dcc.Graph(id='valorncm-graph'),
@@ -49,6 +58,53 @@ layout = html.Div(
      ],
     style=style
 )
+
+
+@app.callback(
+    Output('ncmlaudos-graph', 'figure'),
+    [Input('cap_ncm', 'value')])
+def update_ncmlaudos_graph(capncm_value):
+    layout = go.Layout(yaxis=dict(title='Laudos (qtde)'),
+                       xaxis=dict(title='Importações (%peso)'),
+                       margin={'l': 80, 'r': 0, 't': 20, 'b': 80},
+                       width=800)
+    data = []
+    print('capncm_value', capncm_value)
+    df_filtered = ncm.df_laudos_x_peso
+    print(df_filtered)
+    if capncm_value:
+        df_filtered = df_filtered[df_filtered['codcapncm'].isin(capncm_value)]
+    print('filtered', df_filtered)
+    peso_ncm = df_filtered['pesototal'] * 100
+    qtde_laudos = df_filtered['total']
+    caps_ncm = df_filtered['codcapncm']
+    sizes = graphs.markers_size_por_valor(df_filtered['codcapncm'])
+    max_peso = peso_ncm.max()
+    qtde_total = qtde_laudos.sum()
+    ratio = qtde_total / 100
+    colors = graphs.colors_por_ratio(peso_ncm, qtde_laudos, ratio)
+    diagx = []
+    diagy = []
+    for r in range(int(max_peso)):
+        diagx.append(r)
+        diagy.append(r * ratio)
+    data.append(go.Scatter({
+        'x': ['%.2f' % peso for peso in peso_ncm],
+        'y': qtde_laudos,
+        'text': caps_ncm,
+        'name': 'Imp. x Laudos',
+        'mode': 'markers',
+        'marker': {'size': sizes, 'color': colors}
+    }))
+    data.append(go.Scatter({
+        'x': diagx,
+        'y': diagy,
+        'name': 'Equilíbrio'
+    }))
+    return {
+        'data': data,
+        'layout': layout
+    }
 
 
 @app.callback(
