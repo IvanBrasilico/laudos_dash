@@ -109,3 +109,4 @@ dash.bat
 *venv/*
 *.sh
 *.xls
+*.csv

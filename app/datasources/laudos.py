@@ -39,11 +39,7 @@ password = os.environ.get('PASS_LAUDOS')
 path = os.path.basename(__file__)
 filename = os.path.join(path, 'conf.csv')
 try:
-<<<<<<< HEAD
-    with open('./conf.csv') as in_file:
-=======
     with open(filename) as in_file:
->>>>>>> 39dfeec5886df691ffecca80283c614b95a5a427
         line = in_file.readline()
         host, user, password = line.split(',')
     print(host, user, password)
