@@ -36,13 +36,19 @@ user = os.environ.get('USER_LAUDOS')
 password = os.environ.get('PASS_LAUDOS')
 
 # Depois de arquivo
+path = os.path.basename(__file__)
+filename = os.path.join(path, 'conf.csv')
 try:
+<<<<<<< HEAD
     with open('./conf.csv') as in_file:
+=======
+    with open(filename) as in_file:
+>>>>>>> 39dfeec5886df691ffecca80283c614b95a5a427
         line = in_file.readline()
         host, user, password = line.split(',')
     print(host, user, password)
 except FileNotFoundError:
-    print('arquivo de conf não encontrado')
+    print('########Arquivo de conf não encontrado: %s' % filename)
     pass
 
 if host:
