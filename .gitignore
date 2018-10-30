@@ -108,3 +108,4 @@ dash.bat
 *.xlsx
 *venv/*
 *.sh
+*.xls
