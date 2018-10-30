@@ -30,9 +30,18 @@ import mysql.connector as MySQLdb
 import pandas as pd
 from app.datasources import Data, SqlSource, QtdeLaudosSource
 
+# Primeiro tenta pegar do ambiente
 host = os.environ.get('LAUDOS')
 user = os.environ.get('USER_LAUDOS')
 password = os.environ.get('PASS_LAUDOS')
+
+# Depois de arquivo
+try:
+    with open('conf.csv') as in_file:
+        line = in_file.readline()
+        host, user, password = line.split(',')
+except FileNotFoundError:
+    pass
 
 if host:
     db = MySQLdb.connect(host=host, user=user, password=password, db='LAUDOS')
