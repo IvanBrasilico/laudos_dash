@@ -36,7 +36,7 @@ user = os.environ.get('USER_LAUDOS')
 password = os.environ.get('PASS_LAUDOS')
 
 # Depois de arquivo
-path = os.path.basename(__file__)
+path = os.path.dirname(__file__)
 filename = os.path.join(path, 'conf.csv')
 try:
     with open(filename) as in_file:
