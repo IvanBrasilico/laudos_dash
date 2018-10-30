@@ -105,7 +105,6 @@ laudos.bat
 updatecodigo.sql
 laudos_scripts.bat
 dash.bat
-app/datasources/datasources.zip
 *.xlsx
 *venv/*
 *.sh
