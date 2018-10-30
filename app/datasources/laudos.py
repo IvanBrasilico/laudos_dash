@@ -40,7 +40,9 @@ try:
     with open('conf.csv') as in_file:
         line = in_file.readline()
         host, user, password = line.split(',')
+    print(host, user, password)
 except FileNotFoundError:
+    print('arquivo de conf não encontrado')
     pass
 
 if host:
