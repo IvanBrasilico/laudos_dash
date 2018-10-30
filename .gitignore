@@ -109,3 +109,4 @@ app/datasources/datasources.zip
 *.xlsx
 *venv/*
 *.sh
+*.xls
