@@ -36,18 +36,19 @@ user = os.environ.get('USER_LAUDOS')
 password = os.environ.get('PASS_LAUDOS')
 
 # Depois de arquivo
-path = os.path.dirname(__file__)
-filename = os.path.join(path, 'conf.csv')
-try:
-    with open(filename) as in_file:
-        line = in_file.readline()
-        host, user, password = line.split(',')
-    print(host, user, password)
-except FileNotFoundError:
-    print('########Arquivo de conf não encontrado: %s' % filename)
-    pass
+if host is None:
+    path = os.path.dirname(__file__)
+    filename = os.path.join(path, 'conf.csv')
+    try:
+        with open(filename) as in_file:
+            line = in_file.readline()
+            host, user, password = line.split(',')
+    except FileNotFoundError:
+        print('########Arquivo de conf não encontrado: %s' % filename)
+        pass
 
 if host:
+    print('#%s-%s-%s#' % (host, user, password))
     db = MySQLdb.connect(host=host, user=user, password=password, db='LAUDOS')
 else:
     db = MySQLdb.connect(host='localhost', user='root', password='sala123')
