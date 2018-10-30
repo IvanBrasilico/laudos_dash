@@ -42,7 +42,7 @@ if host is None:
     try:
         with open(filename) as in_file:
             line = in_file.readline()
-            host, user, password = line.split(',')
+            host, user, password, _ = line.split(',')
     except FileNotFoundError:
         print('########Arquivo de conf não encontrado: %s' % filename)
         pass
