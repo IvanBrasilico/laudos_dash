@@ -1,7 +1,7 @@
-# import dash_core_components as dcc
+import dash_core_components as dcc
 import dash_html_components as html
-# from importlib import reload
-# from dash.dependencies import Input, Output
+from importlib import reload
+from dash.dependencies import Input, Output
 
 import app.apps.graphs1 as graphs
 # from app.app import app
@@ -29,21 +29,17 @@ layout = html.Div(
              html.Div(graphs.generate_table_fromdf(laudos.data.df('estados'))),
          ], className='six columns'),
      ]),
-     '''
      dcc.Interval(
          id='interval-component',
          interval=3 * 3600 * 1000,  # in milliseconds
          n_intervals=0
      )
-     '''
      ],
     style=style
 )
 
-'''
 @app.callback(
     Output('home', 'children'),
     [Input('interval-component', 'n_intervals')])
 def refresh_laudos():
     reload(laudos)
-'''
