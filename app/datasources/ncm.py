@@ -4,9 +4,6 @@ Este módulo acessa o Banco de Dados contendo as estatísticas
 históricas de importação por NCM e carrega dataframes com estes
 dados.
 
-# TODO: Atualizar base e registrar em alguma variável a fonte
-# dos dados e sua data
-
 """
 import os
 import pandas as pd
