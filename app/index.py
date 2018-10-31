@@ -1,8 +1,7 @@
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Event, Input, Output
+from dash.dependencies import Input, Output
 from flask import abort
-from importlib import reload
 
 from app.app import app
 from app.apps import app1, app2, app3, app4, app5
