@@ -14,8 +14,7 @@ app.layout = html.Div([
 
 
 @app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname'),
-               Input('interval-component', 'n_intervals')])
+              [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname in ['/', '/index']:
         return app1.layout
