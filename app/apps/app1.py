@@ -4,7 +4,7 @@ from importlib import reload
 from dash.dependencies import Input, Output
 
 import app.apps.graphs1 as graphs
-# from app.app import app
+from app.app import app
 from app.datasources import laudos, ncm
 from app.apps.layout import menu, style
 
