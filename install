@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# Tipical instalation for user /home/ivan on Centos
+# Dependendo do ambiente, os comandos, caminhos e nomes de pacotes podem diferir
+# Funciona com qualquer versão de python3
+cd
+git clone https://github.com/IvanBrasilico/laudos_dash.git
+cd laudos_dash
+# Talvez seja necessário
+# sudo yum install python36 python36-setuptools python36-pip python36-virtualenv
+# Ou ...
+# sudo pip install virtualenv setuptools
+python3 -m virtualenv venv
+. venv/bin/activate
+pip install -e.
+# Pronto, sistema está instalado!!!
+# Para testar, basta setar as variáveis de ambiente
+# LAUDOS - endereço do Servidor MySQL
+# USER_LAUDOS - nome de usuário MySQL
+# PASS_LAUDOS - senha
+# e chamar:
+# python wsgi.py
+# ou
+# python wsgidebug.py
+
+# Para instalar como serviço com proxy do Apache:
+sudo yum install supervisor
+# Pode ser necessário seguir instruções para colocar supervisor como serviço,
+# habilitar módulos necessários e habilitar SELinux para proxy_pass
+# https://www.digitalocean.com/community/tutorials/how-to-use-apache-as-a-reverse-proxy-with-mod_proxy-on-centos-7
+setsebool -P httpd_can_network_connect 1
+# Colocar host,usr,pass, no arquivo app/datasources/conf.csv
+sudo cp laudos_site.conf /etc/http.d/sites-enabled/
+# Checar configuração do supervisor. Em especial, colocar linhas abaixo em /etc/supervisord.conf
+#[include]
+#files = /etc/supervisor.d/*.conf
+sudo cp supervisord.conf /etc/
+sudo mkdir /var/log/laudos_dash
+# supervisord &
+# OU
+# sudo systemctl supervisor start (se instalado como serviço do systemd)
+sudo supervisorctl start laudos_dash # inicia servidor
+# Checar com:
+# sudo supervisorctl status laudos_dash
+# sudo cat /var/log/laudos_dash/error.log
+# sudo cat /var/log/laudos_dash/access.log
