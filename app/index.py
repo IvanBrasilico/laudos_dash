@@ -11,16 +11,12 @@ from app.datasources import laudos
 app.layout = html.Div([
     dcc.Location(id='url', refresh=False),  # interval=3*3600*1000), # Refresh em 3h
     html.Div(id='page-content'),
-    dcc.Interval(
-        id='interval-component',
-        interval=3 * 3600 * 1000,  # in milliseconds
-        n_intervals=0
-    )
 ])
 
 
 @app.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
+              [Input('url', 'pathname'),
+               Input('interval-component', 'n_intervals')])
 def display_page(pathname):
     if pathname in ['/', '/index']:
         return app1.layout
@@ -35,13 +31,6 @@ def display_page(pathname):
     if pathname == '/apps/pag5':
         return app5.layout
     return abort(404)
-
-
-@app.callback(
-    Output('page-content', 'children'),
-    [Input('interval-component', 'n_intervals')])
-def refresh_laudos():
-    reload(laudos)
 
 
 app.css.append_css(
