@@ -3,6 +3,8 @@ import dash_html_components as html
 import pandas as pd
 import plotly.graph_objs as go
 from dash.dependencies import Input, Output
+from importlib import reload
+from mysql.connector.errors import OperationalError
 
 from app.app import app
 from app.datasources import laudos
@@ -48,7 +50,11 @@ def update_my_graph(selected_dropdown_value, query_value, unidades_value):
     data = []
     sql = laudos.lista_sql['sql'][query_value]
     sql = sql.replace('%unidade%', str(unidades_value))
-    df = pd.read_sql(sql, con=laudos.db)
+    try:
+        df = pd.read_sql(sql, con=laudos.db)
+    except OperationalError:
+        reload(laudos)
+        df = pd.read_sql(sql, con=laudos.db)
     layout = go.Layout(xaxis=dict(type='category', title='Mês'),
                        yaxis=dict(title='tempo'),
                        margin={'l': 80, 'r': 0, 't': 20, 'b': 80}

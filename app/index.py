@@ -1,14 +1,21 @@
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
+from dash.dependencies import Event, Input, Output
 from flask import abort
+from importlib import reload
 
 from app.app import app
 from app.apps import app1, app2, app3, app4, app5
+from app.datasources import laudos
 
 app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
+    dcc.Location(id='url', refresh=False),  # interval=3*3600*1000), # Refresh em 3h
+    html.Div(id='page-content'),
+    dcc.Interval(
+        id='interval-component',
+        interval=3 * 3600 * 1000,  # in milliseconds
+        n_intervals=0
+    )
 ])
 
 
@@ -29,9 +36,16 @@ def display_page(pathname):
         return app5.layout
     return abort(404)
 
+
+@app.callback(
+    Output('page-content', 'children'),
+    [Input('interval-component', 'n_intervals')])
+def refresh_laudos():
+    reload(laudos)
+
+
 app.css.append_css(
     {'external_url': 'https://codepen.io/chriddyp/pen/bWLwgP.css'})
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)
