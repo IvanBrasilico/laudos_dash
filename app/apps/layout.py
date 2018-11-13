@@ -5,19 +5,19 @@ menu = \
 html.Div([
     html.Ul([
         html.Li([
-            dcc.Link('Resumo', href='/apps/pag1')
+            dcc.Link('Resumo', href='/laudos_dash/apps/pag1')
         ]),
         html.Li([
-            dcc.Link('Qtde anual/fatores', href='/apps/pag2')
+            dcc.Link('Qtde anual/fatores', href='/laudos_dash/apps/pag2')
         ]),
         html.Li([
-            dcc.Link('Tempos ano/mês fluxo', href='/apps/pag3')
+            dcc.Link('Tempos ano/mês fluxo', href='/laudos_dash/apps/pag3')
         ]),
         html.Li([
-            dcc.Link('Análise NCM', href='/apps/pag4')
+            dcc.Link('Análise NCM', href='/laudos_dash/apps/pag4')
         ]),
         html.Li([
-            dcc.Link('Análise País', href='/apps/pag5')
+            dcc.Link('Análise País', href='/laudos_dash/apps/pag5')
         ]),
     ], className='nav navbar-nav')
 ], className='navbar navbar-default navbar-static-top')
@@ -25,11 +25,11 @@ html.Div([
 '''
 menu = html.Div([
     html.Nav(className="nav nav-pills", children=[
-        html.A('Resumo', className="nav-item nav-link btn", href='/apps/pag1'),
-        html.A('Stats Ano/mês', className="nav-item nav-link btn", href='/apps/pag2'),
-        html.A('Stats Ano/mês', className="nav-item nav-link btn", href='/apps/pag3'),
-        html.A('Análise NCM', className="nav-item nav-link btn", href='/apps/pag4'),
-        html.A('Análise País', className="nav-item nav-link btn", href='/apps/pag5'),
+        html.A('Resumo', className="nav-item nav-link btn", href='/laudos_dash/apps/pag1'),
+        html.A('Stats Ano/mês', className="nav-item nav-link btn", href='/laudos_dash/apps/pag2'),
+        html.A('Stats Ano/mês', className="nav-item nav-link btn", href='/laudos_dash/apps/pag3'),
+        html.A('Análise NCM', className="nav-item nav-link btn", href='/laudos_dash/apps/pag4'),
+        html.A('Análise País', className="nav-item nav-link btn", href='/laudos_dash/apps/pag5'),
     ]),
 ])
 

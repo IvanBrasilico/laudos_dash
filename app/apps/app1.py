@@ -41,5 +41,9 @@ layout = html.Div(
 @app.callback(
     Output('home', 'children'),
     [Input('interval-component', 'n_intervals')])
-def refresh_laudos():
-    reload(laudos)
+def refresh_laudos(intervals):
+    print('************************************************')
+    print('REFRESH nº %s ' % intervals )
+    print('************************************************')
+    print('************************************************')
+    # reload(laudos)

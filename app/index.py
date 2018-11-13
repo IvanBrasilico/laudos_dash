@@ -16,17 +16,17 @@ app.layout = html.Div([
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
-    if pathname in ['/', '/index']:
+    if pathname in ['/laudos_dash/', '/index']:
         return app1.layout
-    if pathname == '/apps/pag1':
+    if pathname == '/laudos_dash/apps/pag1':
         return app1.layout
-    if pathname == '/apps/pag2':
+    if pathname == '/laudos_dash/apps/pag2':
         return app2.layout
-    if pathname == '/apps/pag3':
+    if pathname == '/laudos_dash/apps/pag3':
         return app3.layout
-    if pathname == '/apps/pag4':
+    if pathname == '/laudos_dash/apps/pag4':
         return app4.layout
-    if pathname == '/apps/pag5':
+    if pathname == '/laudos_dash/apps/pag5':
         return app5.layout
     return abort(404)
 
