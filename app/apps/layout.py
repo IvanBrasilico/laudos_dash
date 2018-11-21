@@ -19,6 +19,9 @@ html.Div([
         html.Li([
             dcc.Link('Análise País', href='/laudos_dash/apps/pag5')
         ]),
+        html.Li([
+            dcc.Link('Atualizar dados', href='/laudos_dash/apps/pag6')
+        ]),
     ], className='nav navbar-nav')
 ], className='navbar navbar-default navbar-static-top')
 

@@ -5,6 +5,7 @@ from flask import abort
 
 from app.app import app
 from app.apps import app1, app2, app3, app4, app5
+from importlib import reload
 from app.datasources import laudos
 
 app.layout = html.Div([
@@ -28,6 +29,12 @@ def display_page(pathname):
         return app4.layout
     if pathname == '/laudos_dash/apps/pag5':
         return app5.layout
+    if pathname == '/laudos_dash/apps/pag6':
+        reload(laudos)
+        reload(app1)
+        reload(app4)
+        reload(app5)
+        return app1.layout
     return abort(404)
 
 
