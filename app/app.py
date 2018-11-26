@@ -1,6 +1,6 @@
 import dash
 
-app = dash.Dash('Laudos DashBoard')
+app = dash.Dash('Laudos DashBoard', url_base_pathname='/laudos_dash/')
 server = app.server
 app.config.suppress_callback_exceptions = True
 
