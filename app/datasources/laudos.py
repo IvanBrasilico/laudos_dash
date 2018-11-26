@@ -48,12 +48,23 @@ if host is None:
         pass
 
 if host:
-    print('#%s-%s-%s#' % (host, user, password))
+    print('#%s-%s#' % (host, user))
     db = MySQLdb.connect(host=host, user=user, password=password, db='LAUDOS')
 else:
     db = MySQLdb.connect(host='localhost', user='root', password='sala123')
 
 # db.select_db('LAUDOS')
+print('Conectou com %s. Iniciando carga de dados... ' % host)
+sql = 'select id from information_schema.processlist WHERE State LIKE "%lock%"'
+cursor = db.cursor()
+cursor.execute(sql)
+listaids = [id for id in cursor]
+cursor.close()
+for id in listaids:
+    sql = 'KILL %s;' % id
+    print(sql)
+    db.cursor().execute(sql)
+
 
 data = Data('Fonte: base de dados do sistema Laudos, produção', db)
 

@@ -27,7 +27,6 @@ layout = html.Div([
     ),
     dcc.Dropdown(
         id='years2',
-        # TODO: Get list of years from database
         options= laudos.years,
         value=['2018'],
         multi=True
