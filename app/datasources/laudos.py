@@ -54,7 +54,7 @@ else:
     db = MySQLdb.connect(host='localhost', user='root', password='sala123')
 
 # db.select_db('LAUDOS')
-print('Conectou com $s. Iniciando carga de dados... ' % host)
+print('Conectou com %s. Iniciando carga de dados... ' % host)
 
 data = Data('Fonte: base de dados do sistema Laudos, produção', db)
 
