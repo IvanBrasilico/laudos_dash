@@ -28,16 +28,11 @@ layout = html.Div(
              html.H6('Número de Pedidos de Laudo por Andamento'),
              html.Div(graphs.generate_table_fromdf(laudos.data.df('estados'))),
          ], className='six columns'),
-     ]),
-     dcc.Interval(
-         id='interval-component',
-         interval=3 * 3600 * 1000,  # in milliseconds
-         n_intervals=0
-     )
+     ])
      ],
     style=style
 )
-
+"""
 @app.callback(
     Output('home', 'children'),
     [Input('interval-component', 'n_intervals')])
@@ -47,3 +42,4 @@ def refresh_laudos(intervals):
     print('************************************************')
     print('************************************************')
     # reload(laudos)
+"""
