@@ -16,10 +16,6 @@ layout = html.Div([
     menu,
     html.H3('Consultas na base Laudo. ' +
             'Tempo em dias por ano e mês no fluxo de trabalho'),
-    html.Div([
-        html.P('Selecione o fator a visualizar.\n'),
-        html.P('Em seguida, selecione um ou mais anos a desenhar no gráfico.')
-    ]),
     dcc.Dropdown(
         id='query2',
         options=laudos.queries[2],

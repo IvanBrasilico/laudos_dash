@@ -13,10 +13,6 @@ from app.apps.layout import menu, style
 layout = html.Div([
     menu,
     html.H3('Consultas na base Laudo - Quantidade por ano de um fator'),
-    html.Div([
-        html.P('Selecione o fator a visualizar.\n'),
-        html.P('Em seguida, selecione um ou mais anos a desenhar no gráfico.')
-    ]),
     dcc.Dropdown(
         id='query',
         options=laudos.queries[1],
