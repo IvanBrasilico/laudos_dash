@@ -101,3 +101,4 @@ df_valor = pd.concat([df_valor1, df_valor7,
 df_valor_list = [pd.read_excel(file, header=4) for file in valor_files]
 df_valor = pd.concat(df_valor_list)
 dict_valorncm = {cap: get_valor_capncnm(cap, df_valor) for cap in capsncm}
+
