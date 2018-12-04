@@ -26,17 +26,16 @@ def update_statuspedido_graph():
     for estado, qtde in zip(
             laudos.data.df('estados')['Estado'],
             laudos.data.df('estados')['Quantidade']):
-        annotations.append(dict(xref='y', y=estado, x=qtde + 100,
+        annotations.append(dict(xref='y', y=estado, x=qtde + 110,
                                 text=str(qtde), showarrow=False))
-    layout = go.Layout(yaxis=dict(type='category', title='Status do andamento do Pedido'),
-                       xaxis=dict(title='Número de Pedidos de Laudo por Andamento'),
-                       margin={'l': 300, 'r': 50, 't': 10, 'b': 50})
+    layout = go.Layout(yaxis=dict(type='category'),
+                       margin={'l': 200, 'r': 50, 't': 10, 'b': 10})
     layout['annotations'] = annotations
     data = []
     data.append(go.Bar({
         'y': laudos.data.df('estados')['Estado'],
         'x': laudos.data.df('estados')['Quantidade'],
-        'name': 'Número de Pedidos de Laudo por Andamento',
+        'name': 'Pedidos de Laudo por Andamento',
         'orientation': 'h'
     }))
     return {
