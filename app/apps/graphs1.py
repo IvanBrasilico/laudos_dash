@@ -29,7 +29,7 @@ def update_statuspedido_graph():
         annotations.append(dict(xref='y', y=estado, x=qtde + 110,
                                 text=str(qtde), showarrow=False))
     layout = go.Layout(yaxis=dict(type='category'),
-                       margin={'l': 230, 'r': 50, 't': 20, 'b': 30})
+                       margin={'l': 250, 'r': 50, 't': 20, 'b': 30})
     layout['annotations'] = annotations
     data = []
     data.append(go.Bar({
