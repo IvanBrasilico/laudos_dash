@@ -30,11 +30,13 @@ def display_page(pathname):
     if pathname == '/laudos_dash/apps/pag5':
         return app5.layout
     if pathname == '/laudos_dash/apps/pag6':
-        reload(laudos)
-        reload(app1)
-        reload(app4)
-        reload(app5)
-        return app1.layout
+        try:
+            reload(laudos)
+            reload(app1)
+            reload(app4)
+            reload(app5)
+        finally:
+            return app1.layout
     return abort(404)
 
 
